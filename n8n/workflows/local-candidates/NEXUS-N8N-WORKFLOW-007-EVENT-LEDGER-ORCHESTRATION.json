@@ -1,0 +1,180 @@
+{
+  "name": "NEXUS-N8N-WORKFLOW-007-EVENT-LEDGER-ORCHESTRATION",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "09b2b4c4-e4d1-444f-8540-0629aa73fe41",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "jsCode": "const executionId = String($execution.id ?? Date.now())\n  .replace(/[^A-Za-z0-9_-]/g, '-');\nconst runToken = `${executionId}-${Date.now()}`;\n\nreturn [\n  {\n    json: {\n      workflow: 'NEXUS-N8N-WORKFLOW-007-EVENT-LEDGER-ORCHESTRATION',\n      execution_id: executionId,\n      run_token: runToken,\n      event_name: 'n8n Workflow 007 Event Ledger Orchestration Verification',\n      event_type: 'SYNC_CONFIRMED',\n      state: 'VERIFIED',\n      source_system: 'N8N',\n      source_record_id: `NEXUS-N8N-WORKFLOW-007-${runToken}`,\n      actor_type: 'N8N',\n      actor_id: 'nexus_n8n_runtime',\n      outcome_status: 'VERIFIED',\n      idempotency_key: `NEXUS-N8N-WORKFLOW-007-${runToken}`,\n      prepared_at: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "cf504ba2-e8bd-474f-a306-b2117048e1fd",
+      "name": "Prepare Event Payload"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    nexus_constitution.record_nexus_event(\n        p_event_name       => 'n8n Workflow 007 Event Ledger Orchestration Verification',\n        p_event_type       => 'SYNC_CONFIRMED',\n        p_source_system    => 'N8N',\n        p_source_record_id => '{{ $json.source_record_id }}',\n        p_actor_type       => 'N8N',\n        p_actor_id         => 'nexus_n8n_runtime',\n        p_outcome_status   => 'VERIFIED',\n        p_idempotency_key  => '{{ $json.idempotency_key }}',\n        p_state            => 'VERIFIED',\n        p_evidence         => 'Workflow 007 recorded a governed Nexus event through the approved PostgreSQL gateway.',\n        p_decision         => 'Accept the event only after governed readback and replay return the same event ID.',\n        p_next_action      => 'Read back the event, verify the payload, replay the same idempotency key, and issue a receipt.',\n        p_previous_state   => '{\"workflow_007\":\"UNVERIFIED\"}'::jsonb,\n        p_new_state        => '{\"workflow_007\":\"RECORDED\",\"orchestration\":\"IN_PROGRESS\"}'::jsonb\n    ) AS event_id,\n    '{{ $json.idempotency_key }}'::text AS idempotency_key;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        500,
+        0
+      ],
+      "id": "4cbbfaa8-2b0c-44fd-9ed4-756325ec4d69",
+      "name": "Record Nexus Event",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT *\nFROM nexus_constitution.read_nexus_event(\n    '{{ $json.idempotency_key }}'\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        760,
+        0
+      ],
+      "id": "6ce9250a-a950-4f15-9700-66732a00cf8e",
+      "name": "Read Nexus Event",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const prepared = $('Prepare Event Payload').first().json;\nconst recorded = $('Record Nexus Event').first().json;\nconst readback = $input.first().json;\n\nif (!recorded?.event_id) {\n  throw new Error('Workflow 007 failed: record gateway returned no event_id.');\n}\n\nif (!readback?.event_id) {\n  throw new Error('Workflow 007 failed: governed readback returned no event.');\n}\n\nif (String(recorded.event_id) !== String(readback.event_id)) {\n  throw new Error(\n    `Workflow 007 failed: recorded event_id ${recorded.event_id} does not match readback event_id ${readback.event_id}.`\n  );\n}\n\nconst checks = {\n  event_name: readback.event_name === prepared.event_name,\n  event_type: readback.event_type === prepared.event_type,\n  state: readback.state === prepared.state,\n  source_system: readback.source_system === prepared.source_system,\n  source_record_id: readback.source_record_id === prepared.source_record_id,\n  actor_type: readback.actor_type === prepared.actor_type,\n  actor_id: readback.actor_id === prepared.actor_id,\n  outcome_status: readback.outcome_status === prepared.outcome_status,\n  idempotency_key: readback.idempotency_key === prepared.idempotency_key,\n  timestamp_present: Boolean(readback.event_timestamp),\n  correlation_id_present: Boolean(readback.correlation_id)\n};\n\nconst failedChecks = Object.entries(checks)\n  .filter(([, passed]) => !passed)\n  .map(([name]) => name);\n\nif (failedChecks.length > 0) {\n  throw new Error(\n    `Workflow 007 failed readback verification: ${failedChecks.join(', ')}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      ...prepared,\n      first_event_id: recorded.event_id,\n      readback_event_id: readback.event_id,\n      event_timestamp: readback.event_timestamp,\n      correlation_id: readback.correlation_id,\n      readback_verified: true,\n      readback_checks: checks\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        0
+      ],
+      "id": "ca1eb91a-27c7-4b76-b096-815e2c19b895",
+      "name": "Verify Readback"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    nexus_constitution.record_nexus_event(\n        p_event_name       => 'n8n Workflow 007 Event Ledger Orchestration Verification',\n        p_event_type       => 'SYNC_CONFIRMED',\n        p_source_system    => 'N8N',\n        p_source_record_id => '{{ $json.source_record_id }}',\n        p_actor_type       => 'N8N',\n        p_actor_id         => 'nexus_n8n_runtime',\n        p_outcome_status   => 'VERIFIED',\n        p_idempotency_key  => '{{ $json.idempotency_key }}',\n        p_state            => 'VERIFIED',\n        p_evidence         => 'Workflow 007 recorded a governed Nexus event through the approved PostgreSQL gateway.',\n        p_decision         => 'Accept the event only after governed readback and replay return the same event ID.',\n        p_next_action      => 'Read back the event, verify the payload, replay the same idempotency key, and issue a receipt.',\n        p_previous_state   => '{\"workflow_007\":\"UNVERIFIED\"}'::jsonb,\n        p_new_state        => '{\"workflow_007\":\"RECORDED\",\"orchestration\":\"IN_PROGRESS\"}'::jsonb\n    ) AS event_id,\n    '{{ $json.idempotency_key }}'::text AS idempotency_key;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1280,
+        0
+      ],
+      "id": "c8414a15-c03a-4ba6-a821-82df8b8c8752",
+      "name": "Replay Nexus Event",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const prepared = $('Prepare Event Payload').first().json;\nconst readback = $('Verify Readback').first().json;\nconst replay = $input.first().json;\n\nif (!replay?.event_id) {\n  throw new Error('Workflow 007 failed: replay gateway returned no event_id.');\n}\n\nif (String(replay.event_id) !== String(readback.first_event_id)) {\n  throw new Error(\n    `Workflow 007 failed: replay event_id ${replay.event_id} does not match original event_id ${readback.first_event_id}.`\n  );\n}\n\nif (replay.idempotency_key !== prepared.idempotency_key) {\n  throw new Error('Workflow 007 failed: replay returned an unexpected idempotency key.');\n}\n\nreturn [\n  {\n    json: {\n      workflow: prepared.workflow,\n      mission: 'Governed Nexus event record, readback, payload verification, and idempotent replay',\n      status: 'VERIFIED',\n      execution_id: prepared.execution_id,\n      receipt_timestamp: new Date().toISOString(),\n      first_event_id: readback.first_event_id,\n      readback_event_id: readback.readback_event_id,\n      replay_event_id: replay.event_id,\n      readback_verified: readback.readback_verified,\n      idempotency_verified:\n        String(replay.event_id) === String(readback.first_event_id),\n      event_timestamp: readback.event_timestamp,\n      correlation_id: readback.correlation_id,\n      event_name: prepared.event_name,\n      event_type: prepared.event_type,\n      state: prepared.state,\n      source_system: prepared.source_system,\n      source_record_id: prepared.source_record_id,\n      actor_type: prepared.actor_type,\n      actor_id: prepared.actor_id,\n      outcome_status: prepared.outcome_status,\n      idempotency_key: prepared.idempotency_key,\n      direct_table_access_used: false,\n      gateway_record_used: true,\n      gateway_read_used: true,\n      next_action: 'Captain verifies the Workflow 007 receipt, then proceeds to Tracker-shaped event integration.'\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        0
+      ],
+      "id": "ca7784a8-137d-4fab-ad98-990ddf9676ca",
+      "name": "Verify Replay and Issue Receipt"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "Prepare Event Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Event Payload": {
+      "main": [
+        [
+          {
+            "node": "Record Nexus Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Nexus Event": {
+      "main": [
+        [
+          {
+            "node": "Read Nexus Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Nexus Event": {
+      "main": [
+        [
+          {
+            "node": "Verify Readback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Readback": {
+      "main": [
+        [
+          {
+            "node": "Replay Nexus Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replay Nexus Event": {
+      "main": [
+        [
+          {
+            "node": "Verify Replay and Issue Receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "nodeGroups": [],
+  "tags": []
+}
