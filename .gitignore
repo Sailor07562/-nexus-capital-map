@@ -216,3 +216,55 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Nexus Capital Map sensitive and local runtime artifacts
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.template
+!.env.*.template
+
+# Private keys, certificates, and credential material
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.credentials
+.credentials/
+credentials/
+.secrets/
+secrets/
+**/credentials.json
+**/credentials.yaml
+**/credentials.yml
+**/secrets.json
+**/secrets.yaml
+**/secrets.yml
+local-credentials.*
+local-secrets.*
+
+# PostgreSQL dumps, backups, and raw database exports
+*.dump
+*.backup
+*.bak
+*.pgdump
+*.sql.gz
+*.sql.bz2
+*.sql.xz
+/exports/
+/backups/
+
+# n8n credential exports and local data
+n8n-credentials*.json
+*n8n*credential*
+.n8n/
+n8n-data/
+
+# Local runtime and state
+.local/
+.runtime/
+.state/
+*.pid
