@@ -1,0 +1,125 @@
+[
+  {
+    "id": "NcmiReview20260915",
+    "name": "NEXUS-N8N-CAPITAL-MAP-013 - Authenticated Human Review Console",
+    "active": false,
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "23e443e7-acde-48d8-ae34-bec66c0ebae7",
+        "name": "Authenticated Manual Review",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [180, 300]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "9a138470-2da0-429e-af0a-06e11a7bb737",
+                "name": "intake_item_id",
+                "value": "",
+                "type": "string"
+              },
+              {
+                "id": "cdb8d096-5cc1-4903-89e1-d88ed7745a62",
+                "name": "review_action",
+                "value": "",
+                "type": "string"
+              },
+              {
+                "id": "caa34ea3-e938-487f-a00e-87444f2520f9",
+                "name": "review_basis",
+                "value": "",
+                "type": "string"
+              },
+              {
+                "id": "e644b67a-dbc6-4f32-b57d-a375701cd127",
+                "name": "confirmation",
+                "value": "",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "76776f45-f317-414e-877f-0605471c349d",
+        "name": "Enter Review Request",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [430, 300]
+      },
+      {
+        "parameters": {
+          "jsCode": "const request = {\n  intake_item_id: String($json.intake_item_id || '').trim(),\n  review_action: String($json.review_action || '').trim(),\n  review_basis: String($json.review_basis || '').trim(),\n  confirmation: String($json.confirmation || '').trim()\n};\nconst values = Object.values(request);\nif (values.every(v => v === '')) return [{json:{...request, mode:'view_only'}}];\nif (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(request.intake_item_id)) throw new Error('A valid intake item UUID is required');\nif (!['needs_more_evidence','rejected','accepted'].includes(request.review_action)) throw new Error('Review action must be needs_more_evidence, rejected, or accepted');\nif (request.review_basis.length < 40) throw new Error('Review basis must contain at least 40 characters');\nif (request.confirmation !== 'REVIEW') throw new Error('Type REVIEW in confirmation before submitting an action');\nreturn [{json:{...request, mode:'submit_review'}}];"
+        },
+        "id": "89c60080-f8a7-459f-a723-76c4ef284351",
+        "name": "Validate Review Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [690, 300]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT CASE WHEN $2 = 'accepted' THEN nexus.accept_intake_item(NULLIF($1,'')::uuid,$3) WHEN $2 IN ('needs_more_evidence','rejected') THEN nexus.record_intake_review(NULLIF($1,'')::uuid,NULLIF($2,'')::nexus.intake_review_state,$3) ELSE NULL::uuid END AS review_result_id, CASE WHEN $2 = '' THEN 'view_only' ELSE $2 END AS submitted_action, session_user AS reviewer_login;",
+          "options": {
+            "queryReplacement": "={{ [$json.intake_item_id, $json.review_action, $json.review_basis] }}"
+          }
+        },
+        "id": "be37a68f-fc51-4722-848e-c6acc909a454",
+        "name": "Apply Reviewer-Only Action",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [960, 300],
+        "credentials": {
+          "postgres": {
+            "id": "NcmiReviewer20260915",
+            "name": "NEXUS_CAPITAL_MAP_REVIEWER"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT intake_item_id, ticker, source_title, source_published_at, review_state, review_basis, reviewed_by, reviewed_at, admitted_review_evidence_id, limitations FROM nexus.v_automation_intake_queue WHERE ($1 = '' OR intake_item_id = NULLIF($1,'')::uuid) ORDER BY retrieved_at DESC;",
+          "options": {
+            "queryReplacement": "={{ [$('Validate Review Request').item.json.intake_item_id] }}"
+          }
+        },
+        "id": "525953ae-477c-4198-89b3-8aba945a093b",
+        "name": "Read Current Review State",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6,
+        "position": [1230, 300],
+        "credentials": {
+          "postgres": {
+            "id": "NcmiReviewer20260915",
+            "name": "NEXUS_CAPITAL_MAP_REVIEWER"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Authenticated Manual Review": {
+        "main": [[{"node":"Enter Review Request","type":"main","index":0}]]
+      },
+      "Enter Review Request": {
+        "main": [[{"node":"Validate Review Request","type":"main","index":0}]]
+      },
+      "Validate Review Request": {
+        "main": [[{"node":"Apply Reviewer-Only Action","type":"main","index":0}]]
+      },
+      "Apply Reviewer-Only Action": {
+        "main": [[{"node":"Read Current Review State","type":"main","index":0}]]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "timezone": "America/Los_Angeles"
+    },
+    "pinData": {},
+    "tags": []
+  }
+]
