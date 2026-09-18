@@ -1,0 +1,90 @@
+{
+    "captured_at":  "2026-09-18T14:45:53.3963975-07:00",
+    "mode":  "bounded read-only migration and approved-object verification",
+    "target":  {
+                   "host":  "127.0.0.1",
+                   "port":  5432,
+                   "database":  "postgres",
+                   "schema":  "nexus",
+                   "role":  "nexus_command_tower_ro"
+               },
+    "identity":  "postgres\tnexus_command_tower_ro\tnexus_command_tower_ro\ton\ton\t18.4",
+    "migration_lineage":  {
+                              "registry":  "nexus.schema_migrations",
+                              "columns":  [
+                                              "version",
+                                              "filename",
+                                              "sha256",
+                                              "application_mode",
+                                              "applied_by",
+                                              "applied_at"
+                                          ],
+                              "row_count":  262,
+                              "minimum_version":  1,
+                              "maximum_version":  262,
+                              "expected_maximum_version":  262,
+                              "checksum_column_present":  true,
+                              "checksum_column":  "sha256",
+                              "checksum_count":  262,
+                              "checksum_digest":  "c57aafa41719ea1b81db193e480b6fd5",
+                              "checksum_gate":  "PASS"
+                          },
+    "approved_objects":  [
+                             {
+                                 "view":  "nexus.v_automation_intake_queue",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "24c71cdf9cfa0c1c73214986de20f5d0"
+                             },
+                             {
+                                 "view":  "nexus.v_broker_connection_health",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "89593360a25fc53365fcf046074af7ed"
+                             },
+                             {
+                                 "view":  "nexus.v_capital_map_operating_summary",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "4f2c05956a406527bdc0e4daaf27a0a4"
+                             },
+                             {
+                                 "view":  "nexus.v_paper_order_policy_health",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "65341ce37eb13a47b5910328cd1f93f6"
+                             },
+                             {
+                                 "view":  "nexus.v_research_radar_governance_health",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "243f66bed300c75b346df86e865c1bec"
+                             },
+                             {
+                                 "view":  "nexus.v_research_radar_state_status",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "377dd24f48847f5b1c4487c8ac8d46c6"
+                             },
+                             {
+                                 "view":  "nexus.v_shadow_mode_summary",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "9a70001a4d7224e4fe3280e2678ab471"
+                             },
+                             {
+                                 "view":  "nexus.v_signal_lineage",
+                                 "status":  "present",
+                                 "relkind":  "v",
+                                 "definition_md5":  "4ca4dfc9eec727d54f252ff951981575"
+                             }
+                         ],
+    "object_gate":  "PASS",
+    "row_data_exported":  false,
+    "writes_attempted":  false,
+    "schema_or_data_changed":  false,
+    "migrations_changed":  false,
+    "status":  "PASS"
+}
+
+
