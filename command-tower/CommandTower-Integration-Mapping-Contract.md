@@ -13,7 +13,7 @@ This contract records the mapping boundary discovered from live metadata and bou
 | PostgreSQL | `127.0.0.1:5432` / `postgres` / `nexus` | Canonical relational read source | PostgreSQL | Bounded view and aggregate fixture readback passed; live UI binding intentionally disabled |
 | Airtable | `LB Nexus_Sandbox_v1` / `appl14dXK5cUtvZt8` | Structured registry and evidence surface | PostgreSQL remains authority | Metadata verified; 73 tables; no live binding |
 | Tracker Sandbox | `Nexus_Registry_v1 — TRACKER SANDBOX COPY — 2026-07-09` / `1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY` | Operational visibility and controlled test surface | PostgreSQL remains authority | 53 tabs; bounded reads verified; no write path |
-| GitHub | `Sailor07562/-nexus-capital-map` | Versioned source and governance vault | Git history for source only | Remote push/readback remains unverified |
+| GitHub | `Sailor07562/-nexus-capital-map` | Versioned source and governance vault | Git history for source only | Branch push/readback verified; pull request or `main` merge remains pending |
 | n8n / Docker | Sandbox `localhost:5678`; Production `localhost:5680` | Workflow execution surface | PostgreSQL and governance gates remain authority | Hold; no workflow change |
 
 ## Bounded field and tab mapping
@@ -77,10 +77,9 @@ The adapter must preserve `write_capability = false` until a separately approved
 
 ## Open gates
 
-- Approve and create the bounded PostgreSQL role through the secure local credential path.
+- Approve and create the bounded PostgreSQL role through the secure local credential path. **Passed.**
 - Read back the role privileges and transaction mode. **Passed.**
 - Read back the approved existing Nexus views. **Passed: 8 of 8 present with rows.**
-- Review the mapping contract against the existing Nexus Integration Contract v1.
+- Review the mapping contract against the existing Nexus Integration Contract v1. **Passed:** see `CommandTower-Dependency-Boundary-Review.md`.
 - Keep the fixture-backed scalar summaries bounded; any future live adapter requires a separate implementation review and re-verification.
-
 
