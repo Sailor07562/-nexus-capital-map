@@ -1,0 +1,36 @@
+# Secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*token*
+*secret*
+*credential*
+credentials/
+secrets/
+
+# Database dumps and sensitive exports
+*.dump
+*.backup
+*.bak
+*.sql.gz
+*.csv
+*.tsv
+exports/
+raw-data/
+
+# Runtime and editor noise
+.DS_Store
+Thumbs.db
+node_modules/
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+
+# Local tool state
+.n8n/
+.pgadmin/
+
