@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-18T15:04:18.9947262-07:00",
+  "source_mode": "bounded-read-only-fixture",
+  "target": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "postgres",
+    "schema": "nexus",
+    "role": "nexus_command_tower_ro"
+  },
+  "read_only": true,
+  "view_count": 8,
+  "summary_count": 8,
+  "row_data_exported": false,
+  "writes_attempted": false,
+  "write_capability": false,
+  "gates": {
+    "target_identity": "VERIFIED",
+    "read_only_role": "VERIFIED",
+    "migration_lineage": "VERIFIED",
+    "existing_object_inventory": "VERIFIED",
+    "dependency_boundary": "VERIFIED",
+    "last_known_good": "VERIFIED",
+    "sandbox_test": "PASSED"
+  },
+  "promotion_state": "HOLD",
+  "architecture_state": "FROZEN"
+}
