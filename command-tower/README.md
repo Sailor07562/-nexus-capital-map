@@ -15,6 +15,7 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - The static HTML UI is fixture-compatible and intentionally has no direct browser-to-PostgreSQL connection.
 - The local non-writing sandbox package test passed; its receipt is `CommandTower-Sandbox-Test-Receipt.md`.
 - The scalar-only status payload contract passed local verification; it is not a live API.
+- A loopback-only status endpoint self-test passed; it serves the checked-in payload and rejects write methods.
 
 ## Verification entry points
 
@@ -28,5 +29,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `command-tower-status-payload.json`
 - `Verify-CommandTowerStatusPayload.ps1`
 - `CommandTower-Status-Payload-Verification.md`
+- `Serve-CommandTowerStatus.mjs`
+- `Verify-CommandTowerStatusEndpoint.ps1`
+- `CommandTower-Status-Endpoint-Verification.md`
 
 The adapter remains read-only and promotion-gated. Do not use these artifacts to authorize trades, transfers, deployments, or production promotion.
