@@ -24,9 +24,43 @@ $approvedViews = @(
     'nexus.v_shadow_mode_summary'
 )
 
-$securePassword = Read-Host "Password for $Role@$HostName`:$Port/$Database" -AsSecureString
-$bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword)
-$plainPassword = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+$null = Add-Type -AssemblyName System.Windows.Forms
+$null = Add-Type -AssemblyName System.Drawing
+$form = New-Object System.Windows.Forms.Form
+$form.Text = 'Nexus Command Tower secure password prompt'
+$form.StartPosition = 'CenterScreen'
+$form.Size = New-Object System.Drawing.Size(520, 190)
+$form.TopMost = $true
+$label = New-Object System.Windows.Forms.Label
+$label.Text = "Password for $Role@$HostName`:$Port/$Database"
+$label.Location = New-Object System.Drawing.Point(18, 18)
+$label.AutoSize = $true
+$form.Controls.Add($label)
+$passwordBox = New-Object System.Windows.Forms.TextBox
+$passwordBox.Location = New-Object System.Drawing.Point(18, 50)
+$passwordBox.Size = New-Object System.Drawing.Size(465, 24)
+$passwordBox.UseSystemPasswordChar = $true
+$form.Controls.Add($passwordBox)
+$submit = New-Object System.Windows.Forms.Button
+$submit.Text = 'Continue'
+$submit.Location = New-Object System.Drawing.Point(390, 92)
+$submit.Size = New-Object System.Drawing.Size(93, 30)
+$submit.DialogResult = [System.Windows.Forms.DialogResult]::OK
+$form.AcceptButton = $submit
+$form.Controls.Add($submit)
+$cancel = New-Object System.Windows.Forms.Button
+$cancel.Text = 'Cancel'
+$cancel.Location = New-Object System.Drawing.Point(285, 92)
+$cancel.Size = New-Object System.Drawing.Size(93, 30)
+$cancel.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+$form.CancelButton = $cancel
+$form.Controls.Add($cancel)
+$form.Add_Shown({ $passwordBox.Focus() })
+$dialogResult = $form.ShowDialog()
+if ($dialogResult -ne [System.Windows.Forms.DialogResult]::OK -or [string]::IsNullOrWhiteSpace($passwordBox.Text)) { throw 'Secure local password prompt was cancelled or empty.' }
+$plainPassword = $passwordBox.Text
+$passwordBox.Clear()
+$bstr = [IntPtr]::Zero
 $previousPgPassword = [Environment]::GetEnvironmentVariable('PGPASSWORD', 'Process')
 
 function Invoke-Psql([string]$Sql) {
