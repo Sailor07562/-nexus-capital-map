@@ -1,0 +1,61 @@
+{
+  "contract_version": "001",
+  "data_mode": "mock",
+  "source_view": null,
+  "observed_at": null,
+  "evidence_reference": "Local Command Tower interface shell",
+  "rows": {
+    "command_summary": {
+      "current_cycle": null,
+      "system_health": { "verified": 0, "total": 0 },
+      "open_attention": 0,
+      "promotion_state": "HOLD"
+    },
+    "system_health": [
+      {
+        "service": "PostgreSQL",
+        "authority_system": "PostgreSQL",
+        "environment": "live system of record",
+        "health_state": "unknown",
+        "verification_state": "unknown",
+        "evidence_reference": "State index pending read-only verification"
+      },
+      {
+        "service": "GitHub vault",
+        "authority_system": "GitHub",
+        "environment": "consolidation layer",
+        "health_state": "blocked",
+        "verification_state": "blocked",
+        "evidence_reference": "Local repo commits present; remote push unverified"
+      },
+      {
+        "service": "n8n / Docker",
+        "authority_system": "n8n",
+        "environment": "workflow execution",
+        "health_state": "unknown",
+        "verification_state": "frozen",
+        "evidence_reference": "No workflow change requested"
+      }
+    ],
+    "attention": [
+      {
+        "severity": "high",
+        "summary": "GitHub push not verified",
+        "verification_state": "blocked",
+        "evidence_reference": "Local consolidation exists; no remote execution evidence captured"
+      },
+      {
+        "severity": "medium",
+        "summary": "PostgreSQL existing state",
+        "verification_state": "unknown",
+        "evidence_reference": "Read-only target, lineage, role, and backup discovery required"
+      },
+      {
+        "severity": "info",
+        "summary": "Nexus core freeze",
+        "verification_state": "frozen",
+        "evidence_reference": "Formal amendment required before core architecture changes"
+      }
+    ]
+  }
+}
