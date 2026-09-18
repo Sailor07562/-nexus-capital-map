@@ -16,6 +16,7 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - The local non-writing sandbox package test passed; its receipt is `CommandTower-Sandbox-Test-Receipt.md`.
 - The scalar-only status payload contract passed local verification; it is not a live API.
 - A loopback-only status endpoint self-test passed; it serves the checked-in payload and rejects write methods.
+- The existing Event Ledger Workflow 007 candidate passed static readiness checks and remains execution-held.
 
 ## Verification entry points
 
@@ -32,5 +33,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `Serve-CommandTowerStatus.mjs`
 - `Verify-CommandTowerStatusEndpoint.ps1`
 - `CommandTower-Status-Endpoint-Verification.md`
+- `CommandTower-Event-Ledger-Readiness-Review.md`
+- `Verify-CommandTowerEventLedgerCandidate.ps1`
+- `CommandTower-Event-Ledger-Readiness-Verification.md`
 
 The adapter remains read-only and promotion-gated. Do not use these artifacts to authorize trades, transfers, deployments, or production promotion.
