@@ -11,6 +11,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--self-test') args.set('selfTest', true);
     if (argv[i] === '--payload' && argv[i + 1]) args.set('payload', resolve(argv[++i]));
+    if (argv[i] === '--html' && argv[i + 1]) args.set('html', resolve(argv[++i]));
     if (argv[i] === '--host' && argv[i + 1]) args.set('host', argv[++i]);
     if (argv[i] === '--port' && argv[i + 1]) args.set('port', Number(argv[++i]));
   }
@@ -39,7 +40,16 @@ function sendJson(response, statusCode, body) {
   response.end(encoded);
 }
 
-function createStatusServer(payload) {
+function sendHtml(response, html) {
+  response.writeHead(200, {
+    'content-type': 'text/html; charset=utf-8',
+    'cache-control': 'no-store',
+    'content-length': Buffer.byteLength(html),
+  });
+  response.end(html);
+}
+
+function createStatusServer(payload, html = null) {
   return createServer((request, response) => {
     if (request.method !== 'GET') {
       sendJson(response, 405, { error: 'method_not_allowed', read_only: true, write_capability: false });
@@ -47,6 +57,10 @@ function createStatusServer(payload) {
     }
     if (request.url === '/healthz') {
       sendJson(response, 200, { status: 'ok', mode: payload.source_mode, read_only: true, write_capability: false });
+      return;
+    }
+    if (html && (request.url === '/' || request.url === '/CommandTower.html')) {
+      sendHtml(response, html);
       return;
     }
     if (request.url === '/status') {
@@ -90,7 +104,9 @@ if (args.get('selfTest')) {
   await selfTest(payloadPath);
 } else {
   const payload = await loadPayload(payloadPath);
-  const server = createStatusServer(payload);
+  const htmlPath = args.get('html') ?? resolve(here, 'CommandTower.html');
+  const html = await readFile(htmlPath, 'utf8');
+  const server = createStatusServer(payload, html);
   const host = args.get('host') ?? '127.0.0.1';
   const port = args.get('port') ?? 58883;
   server.listen(port, host, () => {

@@ -15,9 +15,10 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - The static HTML UI is fixture-compatible and intentionally has no direct browser-to-PostgreSQL connection.
 - The local non-writing sandbox package test passed; its receipt is `CommandTower-Sandbox-Test-Receipt.md`.
 - The scalar-only status payload contract passed local verification; it is not a live API.
-- A loopback-only status endpoint self-test passed; it serves the checked-in payload and rejects write methods.
+- A loopback-only status endpoint self-test passed; it serves fixture or approved live scalar payloads and rejects write methods.
 - The bounded live status adapter passed a fresh read-only refresh through `nexus_command_tower_ro`; it emits eight aggregate summaries with no row export or write capability.
 - The loopback status endpoint passed a self-test against the approved live scalar payload; the browser remains disconnected from PostgreSQL.
+- When served by the loopback endpoint, `CommandTower.html` hydrates the bounded live scalar panel from `GET /status`; opening the file directly remains fixture-safe.
 - Event Ledger Workflow 007 passed a bounded n8n Sandbox run with governed record/readback/idempotent replay; broader activation remains held.
 - The Workflow 007 receipt has a Tracker-shaped review projection with no guessed fields, no row key, and no write path.
 
