@@ -97,7 +97,60 @@ FROM nexus.v_shadow_mode_summary;
 "@
 }
 
-$rolePassword = Read-Host "Password for $Role@$HostName`:$Port/$Database" -AsSecureString
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+[System.Windows.Forms.Application]::EnableVisualStyles()
+
+$form = New-Object System.Windows.Forms.Form
+$form.Text = 'Command Tower - Live Read-Only Status Refresh'
+$form.Size = New-Object System.Drawing.Size(640, 210)
+$form.StartPosition = 'CenterScreen'
+$form.TopMost = $true
+$form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+$form.MaximizeBox = $false
+$form.MinimizeBox = $false
+
+$label = New-Object System.Windows.Forms.Label
+$label.Text = "Enter the local password for '$Role' at $HostName`:$Port/$Database. No row data will be exported."
+$label.Location = New-Object System.Drawing.Point(20, 20)
+$label.Size = New-Object System.Drawing.Size(590, 40)
+$form.Controls.Add($label)
+
+$passwordBox = New-Object System.Windows.Forms.TextBox
+$passwordBox.Location = New-Object System.Drawing.Point(20, 70)
+$passwordBox.Size = New-Object System.Drawing.Size(590, 25)
+$passwordBox.UseSystemPasswordChar = $true
+$form.Controls.Add($passwordBox)
+
+$statusLabel = New-Object System.Windows.Forms.Label
+$statusLabel.Location = New-Object System.Drawing.Point(20, 102)
+$statusLabel.Size = New-Object System.Drawing.Size(590, 25)
+$statusLabel.ForeColor = [System.Drawing.Color]::DarkRed
+$form.Controls.Add($statusLabel)
+
+$okButton = New-Object System.Windows.Forms.Button
+$okButton.Text = 'Run read-only refresh'
+$okButton.Location = New-Object System.Drawing.Point(420, 135)
+$okButton.Size = New-Object System.Drawing.Size(150, 30)
+$okButton.Add_Click({
+    if ([string]::IsNullOrWhiteSpace($passwordBox.Text)) { $statusLabel.Text = 'Password is required.'; return }
+    $form.Tag = 'OK'
+    $form.Close()
+})
+$form.Controls.Add($okButton)
+
+$cancelButton = New-Object System.Windows.Forms.Button
+$cancelButton.Text = 'Cancel'
+$cancelButton.Location = New-Object System.Drawing.Point(575, 135)
+$cancelButton.Size = New-Object System.Drawing.Size(60, 30)
+$cancelButton.Add_Click({ $form.Tag = 'Cancel'; $form.Close() })
+$form.Controls.Add($cancelButton)
+$form.AcceptButton = $okButton
+$form.CancelButton = $cancelButton
+$null = $form.ShowDialog()
+if ($form.Tag -ne 'OK') { throw 'Live status refresh was canceled.' }
+$rolePassword = $passwordBox.Text | ConvertTo-SecureString -AsPlainText -Force
+$passwordBox.Clear()
 $bstr = [IntPtr]::Zero
 $previousPgPassword = [Environment]::GetEnvironmentVariable('PGPASSWORD', 'Process')
 

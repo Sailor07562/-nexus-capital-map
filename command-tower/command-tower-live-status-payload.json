@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-18T15:44:45.5405543-07:00",
+  "source_mode": "approved-bounded-live-readonly",
+  "target": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "postgres",
+    "schema": "nexus",
+    "role": "nexus_command_tower_ro"
+  },
+  "read_only": true,
+  "view_count": 8,
+  "summary_count": 8,
+  "summaries": [
+    {
+      "view": "nexus.v_capital_map_operating_summary",
+      "aggregate_only": true,
+      "records": 2,
+      "active_signals": 1,
+      "active_constraints": 3,
+      "capital_flows": 1,
+      "company_exposures": 123,
+      "current_decisions": 1,
+      "open_outcomes": 1,
+      "highest_pressure": 60
+    },
+    {
+      "view": "nexus.v_broker_connection_health",
+      "aggregate_only": true,
+      "connections": 1,
+      "live_trading_enabled": 0,
+      "trading_blocked": 0,
+      "transfers_blocked": 0,
+      "accounts_blocked": 0
+    },
+    {
+      "view": "nexus.v_automation_intake_queue",
+      "aggregate_only": true,
+      "intake_items": 3,
+      "pending_review": 0,
+      "reviewed": 0,
+      "admitted": 0
+    },
+    {
+      "view": "nexus.v_research_radar_governance_health",
+      "aggregate_only": true,
+      "state_lanes": 5,
+      "sources": 24,
+      "pending_signals": 14,
+      "lane_violations": 0,
+      "source_violations": 0,
+      "signal_violations": 0,
+      "scraper_violations": 0,
+      "ticker_link_violations": 0
+    },
+    {
+      "view": "nexus.v_research_radar_state_status",
+      "aggregate_only": true,
+      "lanes": 5,
+      "scraper_execution_disabled": 5,
+      "thesis_promotion_blocked": 5,
+      "trade_action_blocked": 5,
+      "pending_signals": 14
+    },
+    {
+      "view": "nexus.v_paper_order_policy_health",
+      "aggregate_only": true,
+      "policies": 2,
+      "live_trading_enabled": 0,
+      "human_confirmation_required": 2,
+      "proposals": 0,
+      "submitted_orders": 0
+    },
+    {
+      "view": "nexus.v_signal_lineage",
+      "aggregate_only": true,
+      "signals": 9,
+      "capital_maps": 1,
+      "highest_pressure": 60,
+      "evidenced_signals": 9
+    },
+    {
+      "view": "nexus.v_shadow_mode_summary",
+      "aggregate_only": true,
+      "experiments": 1,
+      "intents": 14,
+      "observed_intents": 14,
+      "eligible_intents": 0,
+      "blocked_intents": 0,
+      "sends_orders_enabled": 0,
+      "order_submission_enabled": 0,
+      "order_submission_attempted": 0
+    }
+  ],
+  "row_data_exported": false,
+  "writes_attempted": false,
+  "write_capability": false,
+  "gates": {
+    "identity": "PASS",
+    "transaction_read_only": "PASS",
+    "approved_view_scope": "PASS",
+    "aggregate_only": "PASS"
+  },
+  "promotion_state": "HOLD",
+  "architecture_state": "FROZEN"
+}
