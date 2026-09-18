@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-18T15:25:06-07:00",
+  "projection_status": "READY_FOR_REVIEW",
+  "source_event": {
+    "workflow": "NEXUS-N8N-WORKFLOW-007-EVENT-LEDGER-ORCHESTRATION",
+    "execution_id": "147",
+    "run_status": "VERIFIED",
+    "record_readback_replay": "VERIFIED",
+    "idempotency": "VERIFIED"
+  },
+  "target": {
+    "surface": "Tracker Sandbox",
+    "spreadsheet": "Nexus_Registry_v1 — TRACKER SANDBOX COPY — 2026-07-09",
+    "spreadsheet_id": "1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY",
+    "review_tab": "Test Log",
+    "tab_readback": "BOUNDED_READ_VERIFIED"
+  },
+  "mapping": {
+    "field_dictionary": "TBD-LIVE-VERIFICATION",
+    "row_key": "TBD-LIVE-VERIFICATION",
+    "write_mode": "NOT_EXECUTED",
+    "reconciliation_required": true
+  },
+  "safety": {
+    "postgresql_authority": true,
+    "write_capability": false,
+    "records_written": 0,
+    "promotion_authority": false,
+    "trading_authority": false
+  }
+}
