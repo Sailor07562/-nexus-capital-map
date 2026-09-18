@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Nexus Command Tower local read-only shell" />
+    <title>Nexus Command Tower</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1020'/%3E%3Cpath d='M14 45 32 12l18 33H14Z' fill='%23e7b95a'/%3E%3Ccircle cx='32' cy='36' r='6' fill='%230b1020'/%3E%3C/svg%3E" />
+    <style>
+      :root { --ink:#e9eefc; --muted:#97a4bd; --line:#27334c; --paper:#0b1020; --panel:#121a2d; --panel-2:#17223a; --gold:#e7b95a; --green:#57d29f; --orange:#ffb86b; --red:#ff7585; --blue:#80b8ff; }
+      * { box-sizing:border-box; } body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+      .shell { display:grid; grid-template-columns:250px 1fr; min-height:100vh; }
+      aside { border-right:1px solid var(--line); padding:28px 18px; background:linear-gradient(180deg,#0e1527 0%,#0b1020 100%); }
+      .mark { display:flex; gap:10px; align-items:center; margin-bottom:34px; font-weight:760; letter-spacing:.035em; }.mark i{background:var(--gold);color:#111a2e;font-style:normal;border-radius:8px;padding:5px 8px}.mark small{display:block;color:var(--muted);font-weight:500;letter-spacing:.08em;font-size:.65rem}
+      nav a { color:var(--muted); display:block; padding:10px 12px; border-radius:8px; text-decoration:none; margin:3px 0; } nav a.active,nav a:hover{color:var(--ink);background:var(--panel-2)}
+      .aside-note { margin-top:34px; border-top:1px solid var(--line); padding:18px 8px; color:var(--muted); font-size:.8rem; }.aside-note b{color:var(--gold);display:block;margin-bottom:4px}
+      main { padding:28px clamp(20px,4vw,58px) 54px; max-width:1500px; width:100%; margin:auto; }.top { display:flex; justify-content:space-between; gap:20px; align-items:flex-start; margin-bottom:28px; }.eyebrow{color:var(--gold);text-transform:uppercase;letter-spacing:.13em;font-size:.72rem;font-weight:800;margin:0 0 5px} h1{font-size:clamp(1.7rem,3vw,2.6rem);margin:0;line-height:1.15}.sub{color:var(--muted);margin:9px 0 0}.badge{border:1px solid var(--gold);color:var(--gold);padding:8px 10px;border-radius:999px;font-size:.78rem;white-space:nowrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:25px}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:17px}.card .k{color:var(--muted);font-size:.78rem}.card .v{font-size:1.7rem;font-weight:740;margin:5px 0}.state{font-size:.78rem;font-weight:700}.verified{color:var(--green)}.blocked{color:var(--orange)}.unknown{color:var(--blue)}.frozen{color:var(--gold)}
+      .columns{display:grid;grid-template-columns:1.2fr .8fr;gap:17px}.section{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}.section h2{font-size:1rem;margin:0;padding:16px 18px;border-bottom:1px solid var(--line)}.table{width:100%;border-collapse:collapse}.table th{color:var(--muted);font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;text-align:left;padding:12px 18px}.table td{padding:14px 18px;border-top:1px solid #222d43;font-size:.9rem;vertical-align:top}.status{display:inline-flex;gap:6px;align-items:center;border-radius:99px;font-size:.75rem;font-weight:700}.dot{width:7px;height:7px;border-radius:50%;background:currentColor}.quiet{color:var(--muted);font-size:.8rem}.stack{padding:12px 18px}.item{padding:12px 0;border-bottom:1px solid #222d43}.item:last-child{border:0}.item strong{display:block;font-size:.92rem}.item p{margin:3px 0 0;color:var(--muted);font-size:.82rem}.footer{color:var(--muted);font-size:.78rem;margin-top:18px}.filter{background:transparent;border:1px solid var(--line);color:var(--ink);padding:8px 10px;border-radius:8px;font:inherit;font-size:.82rem}
+      @media (max-width:960px){.shell{grid-template-columns:1fr}aside{display:none}.grid{grid-template-columns:repeat(2,1fr)}.columns{grid-template-columns:1fr}} @media(max-width:560px){main{padding:22px 15px}.top{flex-direction:column}.grid{grid-template-columns:1fr}.table th:nth-child(3),.table td:nth-child(3){display:none}}
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside>
+        <div class="mark"><i>N</i><span>NEXUS<small>COMMAND TOWER</small></span></div>
+        <nav><a class="active" href="#overview">Overview</a><a href="#health">System health</a><a href="#attention">Attention queue</a><a href="#promotions">Promotion gates</a><a href="#evidence">Evidence &amp; backups</a></nav>
+        <div class="aside-note"><b>READ-ONLY SHELL</b>Mock data only<br>Live PostgreSQL: unverified</div>
+      </aside>
+      <main id="overview">
+        <header class="top"><div><p class="eyebrow">Nexus Capital Map</p><h1>Command Tower</h1><p class="sub">Operator view of health, evidence, gates, and movement.</p></div><span class="badge">STRUCTURE FROZEN</span></header>
+        <section class="grid" aria-label="Current summary">
+          <div class="card"><div class="k">Current cycle</div><div class="v">—</div><span class="state unknown">● Unknown</span></div>
+          <div class="card"><div class="k">System health</div><div class="v">0 / 0</div><span class="state unknown">● No verified readback</span></div>
+          <div class="card"><div class="k">Open attention</div><div class="v">0</div><span class="state unknown">● Mock shell</span></div>
+          <div class="card"><div class="k">Promotion state</div><div class="v">HOLD</div><span class="state frozen">● Frozen core protected</span></div>
+        </section>
+        <div class="columns">
+          <section class="section" id="health"><h2>System health</h2><table class="table"><thead><tr><th>System</th><th>Authority</th><th>State</th><th>Evidence</th></tr></thead><tbody>
+            <tr><td><strong>PostgreSQL</strong><br><span class="quiet">Live system of record</span></td><td>PostgreSQL</td><td><span class="status unknown"><span class="dot"></span>Unknown</span></td><td class="quiet">State index pending read-only verification</td></tr>
+            <tr><td><strong>GitHub vault</strong><br><span class="quiet">Consolidation layer</span></td><td>GitHub</td><td><span class="status blocked"><span class="dot"></span>Push unverified</span></td><td class="quiet">Local repo commits present</td></tr>
+            <tr><td><strong>n8n / Docker</strong><br><span class="quiet">Workflow execution</span></td><td>n8n</td><td><span class="status frozen"><span class="dot"></span>Hold</span></td><td class="quiet">No workflow change requested</td></tr>
+          </tbody></table></section>
+          <section class="section" id="attention"><h2>Attention queue</h2><div class="stack">
+            <div class="item"><strong class="blocked">GitHub push not verified</strong><p>Local consolidation exists; no remote execution evidence captured.</p></div>
+            <div class="item"><strong class="unknown">PostgreSQL existing state</strong><p>Read-only target, lineage, role, and backup discovery required.</p></div>
+            <div class="item"><strong class="frozen">Nexus core freeze</strong><p>Formal amendment required before core architecture changes.</p></div>
+          </div></section>
+        </div>
+        <div class="columns" style="margin-top:17px"><section class="section" id="promotions"><h2>Promotion gates</h2><table class="table"><thead><tr><th>Gate</th><th>State</th><th>Next evidence</th></tr></thead><tbody><tr><td>Target identity</td><td class="blocked">Blocked</td><td>Read-only PostgreSQL identity</td></tr><tr><td>Last Known Good</td><td class="blocked">Blocked</td><td>Backup + restoration reference</td></tr><tr><td>Sandbox test</td><td class="frozen">Frozen</td><td>Approved target and rollback</td></tr></tbody></table></section>
+          <section class="section" id="evidence"><h2>Evidence &amp; backups</h2><div class="stack"><div class="item"><strong>Architecture freeze</strong><p>Nexus Architecture v1.0 — frozen anchor retained.</p></div><div class="item"><strong>Command Tower baseline</strong><p>Governance, Kernel, draft schema, ledger and views contracts committed locally.</p></div><div class="item"><strong>Operator rule</strong><p>Evidence first. No execution claim without readback.</p></div></div></section></div>
+        <p class="footer">Mock/read-only interface shell · No database connection · No automation controls · No credentials</p>
+      </main>
+    </div>
+  </body>
+</html>
