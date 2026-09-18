@@ -14,6 +14,7 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - No row data export, writes, schema changes, migrations, workflow changes, or trading actions are included.
 - The static HTML UI is fixture-compatible and intentionally has no direct browser-to-PostgreSQL connection.
 - The local non-writing sandbox package test passed; its receipt is `CommandTower-Sandbox-Test-Receipt.md`.
+- The scalar-only status payload contract passed local verification; it is not a live API.
 
 ## Verification entry points
 
@@ -23,5 +24,9 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `CommandTower-Migration-Object-Verification.md`
 - `Invoke-CommandTowerSandboxTest.ps1`
 - `CommandTower-Sandbox-Test-Receipt.md`
+- `CommandTower-Status-Payload-Contract.md`
+- `command-tower-status-payload.json`
+- `Verify-CommandTowerStatusPayload.ps1`
+- `CommandTower-Status-Payload-Verification.md`
 
 The adapter remains read-only and promotion-gated. Do not use these artifacts to authorize trades, transfers, deployments, or production promotion.
