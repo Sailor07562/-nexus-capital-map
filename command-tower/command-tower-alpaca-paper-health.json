@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-18T16:25:12.5430326-07:00",
+  "surface_id": "alpaca:paper",
+  "provider": "Alpaca Paper",
+  "mode": "paper metadata and health projection",
+  "binding_status": "projection only; direct broker connector not enabled",
+  "source": {
+    "system": "PostgreSQL",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "postgres",
+    "schema": "nexus",
+    "role": "nexus_command_tower_ro",
+    "source_mode": "approved-bounded-live-readonly",
+    "views": [
+      "nexus.v_broker_connection_health",
+      "nexus.v_paper_order_policy_health",
+      "nexus.v_shadow_mode_summary"
+    ]
+  },
+  "health": {
+    "broker_connections": 1,
+    "live_trading_enabled": 0,
+    "trading_blocked": 0,
+    "transfers_blocked": 0,
+    "accounts_blocked": 0,
+    "paper_policies": 2,
+    "human_confirmation_required": 2,
+    "paper_proposals": 0,
+    "submitted_orders": 0,
+    "shadow_experiments": 1,
+    "shadow_intents": 14,
+    "order_submission_enabled": 0,
+    "order_submission_attempted": 0
+  },
+  "safety": {
+    "read_only": true,
+    "write_capability": false,
+    "row_data_exported": false,
+    "writes_attempted": false,
+    "direct_alpaca_connector_used": false,
+    "order_submission_enabled": false,
+    "order_submission_attempted": false,
+    "live_trading_enabled": false,
+    "human_confirmation_required": true,
+    "promotion_status": "HOLD",
+    "architecture_status": "FROZEN"
+  }
+}

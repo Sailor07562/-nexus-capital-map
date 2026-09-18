@@ -22,6 +22,7 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - Event Ledger Workflow 007 passed a bounded n8n Sandbox run with governed record/readback/idempotent replay; broader activation remains held.
 - The Workflow 007 receipt has a Tracker-shaped review projection with no guessed fields, no row key, and no write path.
 - The versioned Integration Registry records exact Airtable sandbox table/field identities and the three approved Tracker tabs; its verification receipt is `CommandTower-Integration-Registry-Verification.md`.
+- The Alpaca Paper health projection is aggregate-only and PostgreSQL-backed; its verification receipt is `CommandTower-Alpaca-Paper-Health-Verification.md`. Direct Alpaca access and order submission remain disabled.
 
 ## Verification entry points
 
@@ -57,5 +58,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `command-tower-integration-registry.json`
 - `Verify-CommandTowerIntegrationRegistry.ps1`
 - `CommandTower-Integration-Registry-Verification.md`
+- `command-tower-alpaca-paper-health.json`
+- `Verify-CommandTowerAlpacaPaperHealth.ps1`
+- `CommandTower-Alpaca-Paper-Health-Verification.md`
 
 The adapter remains read-only and promotion-gated. Do not use these artifacts to authorize trades, transfers, deployments, or production promotion.
