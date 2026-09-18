@@ -28,6 +28,7 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `Verify-CommandTowerMigrationAndObjects.ps1`
 - `CommandTower-Live-ReadOnly-Binding-Evidence.md`
 - `CommandTower-Migration-Object-Verification.md`
+- Migration and object verification uses a visible masked local password dialog; credentials are not collected in chat or written to repository artifacts.
 - `Invoke-CommandTowerSandboxTest.ps1`
 - `CommandTower-Sandbox-Test-Receipt.md`
 - `CommandTower-Status-Payload-Contract.md`
