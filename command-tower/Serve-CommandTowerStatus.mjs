@@ -19,9 +19,13 @@ function parseArgs(argv) {
 
 async function loadPayload(payloadPath) {
   const payload = JSON.parse(await readFile(payloadPath, 'utf8'));
-  if (payload.source_mode !== 'bounded-read-only-fixture') throw new Error('Unsupported payload source mode.');
+  if (!['bounded-read-only-fixture', 'approved-bounded-live-readonly'].includes(payload.source_mode)) throw new Error('Unsupported payload source mode.');
   if (payload.read_only !== true || payload.write_capability !== false) throw new Error('Payload safety boundary failed.');
   if (payload.row_data_exported !== false || payload.writes_attempted !== false) throw new Error('Payload export/write flags failed.');
+  if (payload.view_count !== 8 || payload.summary_count !== 8) throw new Error('Approved view/summary counts failed.');
+  if (payload.source_mode === 'approved-bounded-live-readonly' && (!Array.isArray(payload.summaries) || payload.summaries.length !== 8 || payload.summaries.some((summary) => summary.aggregate_only !== true))) {
+    throw new Error('Aggregate-only summary boundary failed.');
+  }
   return payload;
 }
 

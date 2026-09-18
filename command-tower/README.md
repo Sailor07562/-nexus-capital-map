@@ -16,6 +16,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - The local non-writing sandbox package test passed; its receipt is `CommandTower-Sandbox-Test-Receipt.md`.
 - The scalar-only status payload contract passed local verification; it is not a live API.
 - A loopback-only status endpoint self-test passed; it serves the checked-in payload and rejects write methods.
+- The bounded live status adapter passed a fresh read-only refresh through `nexus_command_tower_ro`; it emits eight aggregate summaries with no row export or write capability.
+- The loopback status endpoint passed a self-test against the approved live scalar payload; the browser remains disconnected from PostgreSQL.
 - Event Ledger Workflow 007 passed a bounded n8n Sandbox run with governed record/readback/idempotent replay; broader activation remains held.
 - The Workflow 007 receipt has a Tracker-shaped review projection with no guessed fields, no row key, and no write path.
 
@@ -34,6 +36,11 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `Serve-CommandTowerStatus.mjs`
 - `Verify-CommandTowerStatusEndpoint.ps1`
 - `CommandTower-Status-Endpoint-Verification.md`
+- `Invoke-CommandTowerLiveStatusReadOnly.ps1`
+- `Verify-CommandTowerLiveStatusAdapter.ps1`
+- `CommandTower-Live-Status-Adapter-Verification.md`
+- `Verify-CommandTowerLiveStatusEndpoint.ps1`
+- `CommandTower-Live-Status-Endpoint-Verification.md`
 - `CommandTower-Event-Ledger-Readiness-Review.md`
 - `Verify-CommandTowerEventLedgerCandidate.ps1`
 - `CommandTower-Event-Ledger-Readiness-Verification.md`
