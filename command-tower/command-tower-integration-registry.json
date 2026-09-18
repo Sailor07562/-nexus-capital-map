@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-18T16:20:13-07:00",
+  "registry_id": "NEXUS-COMMAND-TOWER-INTEGRATION-REGISTRY-v1",
+  "mode": "bounded live read-only integration registry",
+  "authority": {
+    "semantic_authority": "PostgreSQL",
+    "command_tower_role": "coordinate verified read-only surfaces and their evidence boundaries",
+    "promotion_status": "HOLD",
+    "architecture_status": "FROZEN"
+  },
+  "surfaces": [
+    {
+      "surface_id": "airtable:appl14dXK5cUtvZt8",
+      "surface_type": "Airtable",
+      "name": "LB Nexus_Sandbox_v1",
+      "base_id": "appl14dXK5cUtvZt8",
+      "permission_level": "create",
+      "authority": "PostgreSQL remains semantic authority",
+      "state": "metadata and bounded record readback verified",
+      "source_reference": "Airtable connected read-only discovery/readback",
+      "mapped_objects": [
+        {
+          "object_id": "airtable:appl14dXK5cUtvZt8/tblsz0ClBB8MLJh9A",
+          "object_type": "table",
+          "name": "Dashboard_Status",
+          "table_id": "tblsz0ClBB8MLJh9A",
+          "description": "Captain's Bridge status table for governance, finance, security, replay, recovery, operations and intelligence.",
+          "mapped_fields": [
+            { "id": "fld5PprD4dtXewgcl", "name": "Domain", "type": "singleLineText" },
+            { "id": "fldiiqoPz71gVVCBt", "name": "Status", "type": "singleLineText" },
+            { "id": "fldoaK5sKjBU8W6AI", "name": "Severity", "type": "singleLineText" },
+            { "id": "fldsZTa1z33Wkb7T6", "name": "Last_Review", "type": "date" },
+            { "id": "flds8mFjuxs7XsQga", "name": "Notes", "type": "multilineText" },
+            { "id": "fldpnAdJ4KQfXPVYB", "name": "Status_ENUM", "type": "singleSelect" },
+            { "id": "fld9rHJPtYI7Pp45Z", "name": "Severity_ENUM", "type": "singleSelect" }
+          ],
+          "bounded_read": { "page_size": 5, "total_record_count": 7, "sample_record_ids": ["recuV7pZdoV6ue2sj", "rechVowT8eIGaMjKb", "recYOUkMkppj3OHjW", "reco01yKXxyAeYGbr", "recbRY38aITOibAsz"] }
+        },
+        {
+          "object_id": "airtable:appl14dXK5cUtvZt8/tblcSl2WemKiIhjDZ",
+          "object_type": "table",
+          "name": "Governance_Command_Center",
+          "table_id": "tblcSl2WemKiIhjDZ",
+          "description": "Nexus top-level governance command table.",
+          "mapped_fields": [
+            { "id": "fldL4imlNhTGhrUed", "name": "Command_ID", "type": "singleLineText" },
+            { "id": "fldgcAiozwxbVCB77", "name": "Command_Name", "type": "singleLineText" },
+            { "id": "fldVLcfWxrHeSz6w8", "name": "Governance_Domain", "type": "singleSelect" },
+            { "id": "fldYIcjZFXB303wlV", "name": "Command_Status", "type": "singleSelect" },
+            { "id": "fldM5ZgbcU1ALRiWH", "name": "Update_Priority", "type": "singleSelect" },
+            { "id": "fldlOUtPnlOpFFMTb", "name": "Permission_Gate", "type": "singleSelect" },
+            { "id": "fld1qevdwxcbIJdFU", "name": "Required_Action", "type": "multilineText" },
+            { "id": "fldmgmBJhNIuj1Oix", "name": "Last_Updated_Pacific", "type": "dateTime" }
+          ],
+          "bounded_read": { "page_size": 5, "total_record_count": 1, "sample_record_ids": ["recT9HF6mJcNLIJQN"] }
+        },
+        {
+          "object_id": "airtable:appl14dXK5cUtvZt8/tblYN5zPLYsvOzhYQ",
+          "object_type": "table",
+          "name": "Airtable_Readback_Seal_Log",
+          "table_id": "tblYN5zPLYsvOzhYQ",
+          "description": "Governed sandbox log for Airtable readback verification and Captain seal events.",
+          "mapped_fields": [
+            { "id": "fldGln6vqCHN7JNnN", "name": "Readback_ID", "type": "singleLineText" },
+            { "id": "fldy0hh158tcjQeJU", "name": "Readback_Title", "type": "singleLineText" },
+            { "id": "fldsFsTZL3HLwp69H", "name": "Verified_Object_Type", "type": "singleSelect" },
+            { "id": "fld0AV2ToLv6mPV7m", "name": "Verified_Object_Name", "type": "singleLineText" },
+            { "id": "fldyAkgfpwddM7WIK", "name": "Verification_Action", "type": "singleSelect" },
+            { "id": "fldrhUBG9OYTuzJcG", "name": "Verification_Status", "type": "singleSelect" },
+            { "id": "fldWAEMU4nn2NaTSx", "name": "Evidence_Basis", "type": "singleSelect" },
+            { "id": "fldpmxhA8un2uePa9", "name": "No_Delete_No_Bulk_Overwrite", "type": "checkbox" },
+            { "id": "fldwJWC4CEFzDopOC", "name": "PostgreSQL_Authority_Preserved", "type": "checkbox" },
+            { "id": "fldVjwakbvoSi8neg", "name": "Captain_Seal", "type": "checkbox" }
+          ],
+          "bounded_read": { "page_size": 5, "total_record_count": 11, "sample_record_ids": ["recqm3rTjCGrrzjyL", "recYpGn4ox1XaKCDt", "recWGk3ONcHWmvjGC", "recSJcBgGtkLpYCI4", "rec366d1iAxyXbFAf"] }
+        },
+        {
+          "object_id": "airtable:appl14dXK5cUtvZt8/tblXaDzQdTgn3I7HZ",
+          "object_type": "table",
+          "name": "Validation_Log",
+          "table_id": "tblXaDzQdTgn3I7HZ",
+          "description": "Nexus log for validation checks and review history.",
+          "mapped_fields": [
+            { "id": "fld7bDO5gUV2bxL7J", "name": "Validation_ID", "type": "singleLineText" },
+            { "id": "fldH3CgU6AgA1QmEY", "name": "Source", "type": "singleLineText" },
+            { "id": "flds3YV04mg0Migyy", "name": "Target", "type": "singleLineText" },
+            { "id": "fldcuxUWVQ5dsx9EZ", "name": "Status", "type": "singleSelect" },
+            { "id": "fld10rzUqKhBsVoix", "name": "Outcome", "type": "singleLineText" },
+            { "id": "fldlEMF1RAaxVZBEh", "name": "Review_Date", "type": "date" },
+            { "id": "fldzyujxIVxt6lG1S", "name": "Notes", "type": "multilineText" }
+          ],
+          "bounded_read": { "page_size": 5, "total_record_count": 3, "sample_record_ids": ["recH54y3ErQyxEhdO", "recvrv78xSlo2O2qn", "rec2mLtnlbwUPQulF"] }
+        },
+        {
+          "object_id": "airtable:appl14dXK5cUtvZt8/tblOLuIWA3Ot2NpKh",
+          "object_type": "table",
+          "name": "Nexus_Test_Intake",
+          "table_id": "tblOLuIWA3Ot2NpKh",
+          "description": "Controlled LB test intake table for validating the Airtable read/write boundary before broader pipelines.",
+          "mapped_fields": [
+            { "id": "fldTaJ1UcQDnaTFNm", "name": "Signal_Title", "type": "singleLineText" },
+            { "id": "fldOBR2XPPH6bl37a", "name": "Source_URL", "type": "url" },
+            { "id": "fldNs1Wq8Vin2uoFE", "name": "Source_Text", "type": "multilineText" },
+            { "id": "fldqhiuzugrxG5Chs", "name": "Raw_Status", "type": "singleSelect" },
+            { "id": "fldrUYBUclQUcq9MG", "name": "Intake_Method", "type": "singleSelect" },
+            { "id": "fldcUAUBJF2MyB2U2", "name": "Test_Notes", "type": "multilineText" }
+          ],
+          "bounded_read": { "page_size": 5, "total_record_count": 3, "sample_record_ids": ["recMpQTuZ2GpHm7ab", "recXWawNdw61dANn9", "recsqdBhjF4PlWNON"] }
+        }
+      ],
+      "readback_status": "PASS"
+    },
+    {
+      "surface_id": "tracker:1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY",
+      "surface_type": "Google Sheets",
+      "name": "Nexus_Registry_v1 — TRACKER SANDBOX COPY — 2026-07-09",
+      "spreadsheet_id": "1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY",
+      "url": "https://docs.google.com/spreadsheets/d/1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY/edit",
+      "metadata": {
+        "locale": "en_US",
+        "time_zone": "Etc/GMT",
+        "discovered_sheet_count": 53,
+        "default_grid": { "row_count": 1000, "column_count": 26 }
+      },
+      "authority": "PostgreSQL remains semantic authority",
+      "state": "bounded header and data readback verified",
+      "mapped_objects": [
+        {
+          "object_id": "tracker:1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY/2039797444",
+          "object_type": "sheet",
+          "name": "Index",
+          "sheet_id": 2039797444,
+          "sheet_index": 16,
+          "bounded_reads": ["A1:Z8"],
+          "observed_header_columns": ["index_id", "registry_name", "registry_type", "tab_name", "primary_id_prefix", "status", "created_date", "governing_doctrine", "notes"],
+          "candidate_read_key": "index_id",
+          "use": "registry index and vocabulary health"
+        },
+        {
+          "object_id": "tracker:1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY/475587654",
+          "object_type": "sheet",
+          "name": "Authority",
+          "sheet_id": 475587654,
+          "sheet_index": 10,
+          "bounded_reads": ["A1:Z8"],
+          "observed_header_columns": ["authority_id", "authority_name", "authority_type", "authority_scope", "authority_holder", "authority_status", "created_date", "governing_doctrine", "notes"],
+          "candidate_read_key": "authority_id",
+          "use": "authority-map reference"
+        },
+        {
+          "object_id": "tracker:1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY/877240417",
+          "object_type": "sheet",
+          "name": "Registry_Test_Log",
+          "sheet_id": 877240417,
+          "sheet_index": 24,
+          "bounded_reads": ["A1:Z8", "A9:Z25"],
+          "observed_header_columns": ["test_id", "test_date", "test_area", "test_result", "verified_records", "status", "notes", "governing_doctrine", "notes"],
+          "duplicate_header_columns": ["notes"],
+          "candidate_read_key": "test_id",
+          "use": "evidence and continuity queue"
+        }
+      ],
+      "readback_status": "PASS"
+    }
+  ],
+  "safety": {
+    "read_only": true,
+    "write_capability": false,
+    "writes_attempted": false,
+    "records_written": 0,
+    "schema_changes": false,
+    "workflow_changes": false,
+    "credential_changes": false,
+    "trading_or_transfer_actions": false,
+    "reconciliation_required_before_any_future_write": true
+  }
+}

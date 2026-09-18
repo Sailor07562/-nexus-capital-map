@@ -21,6 +21,7 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - When served by the loopback endpoint, `CommandTower.html` hydrates the bounded live scalar panel from `GET /status`; opening the file directly remains fixture-safe.
 - Event Ledger Workflow 007 passed a bounded n8n Sandbox run with governed record/readback/idempotent replay; broader activation remains held.
 - The Workflow 007 receipt has a Tracker-shaped review projection with no guessed fields, no row key, and no write path.
+- The versioned Integration Registry records exact Airtable sandbox table/field identities and the three approved Tracker tabs; its verification receipt is `CommandTower-Integration-Registry-Verification.md`.
 
 ## Verification entry points
 
@@ -53,5 +54,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `command-tower-tracker-event-projection.json`
 - `Verify-CommandTowerTrackerEventProjection.ps1`
 - `CommandTower-Tracker-Event-Projection-Verification.md`
+- `command-tower-integration-registry.json`
+- `Verify-CommandTowerIntegrationRegistry.ps1`
+- `CommandTower-Integration-Registry-Verification.md`
 
 The adapter remains read-only and promotion-gated. Do not use these artifacts to authorize trades, transfers, deployments, or production promotion.
