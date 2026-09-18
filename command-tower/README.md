@@ -42,6 +42,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `CommandTower-Live-Status-Adapter-Verification.md`
 - `Verify-CommandTowerLiveStatusEndpoint.ps1`
 - `CommandTower-Live-Status-Endpoint-Verification.md`
+- `Verify-CommandTowerFreezeContinuity.ps1`
+- `CommandTower-Freeze-Continuity-Verification.md`
 - `CommandTower-Event-Ledger-Readiness-Review.md`
 - `Verify-CommandTowerEventLedgerCandidate.ps1`
 - `CommandTower-Event-Ledger-Readiness-Verification.md`
