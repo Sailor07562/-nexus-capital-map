@@ -1,0 +1,24 @@
+{
+    "captured_at":  "2026-09-18T14:15:56.6086315-07:00",
+    "action":  "created bounded PostgreSQL read-only role",
+    "target":  {
+                   "host":  "127.0.0.1",
+                   "port":  5432,
+                   "database":  "postgres",
+                   "role":  "nexus_command_tower_ro"
+               },
+    "grants_applied":  [
+                           "CONNECT on database",
+                           "USAGE on nexus schema",
+                           "SELECT on existing nexus tables",
+                           "default_transaction_read_only=on"
+                       ],
+    "default_privileges_changed":  false,
+    "schema_or_data_changed":  false,
+    "migration_or_workflow_changed":  false,
+    "admin_verification":  "nexus_command_tower_ro\tf\tf\tf\tt\tf\tf\r\nt\r\nt\r\nf\r\nt\r\nf\r\nf\r\nf",
+    "role_session_verification":  "postgres\tnexus_command_tower_ro\tnexus_command_tower_ro\ton\ton",
+    "secrets_persisted":  false
+}
+
+

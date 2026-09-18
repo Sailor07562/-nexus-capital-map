@@ -1,0 +1,24 @@
+# Nexus Command Tower
+
+This directory contains the reviewed Command Tower read-only integration artifacts.
+
+## Current state
+
+- Architecture remains frozen.
+- PostgreSQL semantic authority is preserved.
+- Target: `127.0.0.1:5432`, database `postgres`, schema `nexus`.
+- Role: `nexus_command_tower_ro`.
+- Eight approved views and eight aggregate summaries were refreshed through the bounded role.
+- Migration lineage passed at version `262` with `262` non-empty `sha256` values.
+- All eight approved view definitions passed catalog-hash verification.
+- No row data export, writes, schema changes, migrations, workflow changes, or trading actions are included.
+- The static HTML UI is fixture-compatible and intentionally has no direct browser-to-PostgreSQL connection.
+
+## Verification entry points
+
+- `Verify-CommandTowerReadOnlyAdapter.ps1`
+- `Verify-CommandTowerMigrationAndObjects.ps1`
+- `CommandTower-Live-ReadOnly-Binding-Evidence.md`
+- `CommandTower-Migration-Object-Verification.md`
+
+The adapter remains read-only and promotion-gated. Do not use these artifacts to authorize trades, transfers, deployments, or production promotion.

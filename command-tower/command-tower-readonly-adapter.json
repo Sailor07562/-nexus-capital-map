@@ -1,0 +1,40 @@
+{
+  "adapter": "command-tower-readonly-adapter",
+  "mode": "bounded read-only fixture",
+  "source_evidence": ["command-tower-view-readback.json", "command-tower-summary-readback.json"],
+  "captured_at": "2026-09-18T14:39:29.7580086-07:00",
+  "identity": {
+    "database": "postgres",
+    "role": "nexus_command_tower_ro",
+    "default_transaction_read_only": true,
+    "row_data_included": false,
+    "write_path": false
+  },
+  "approved_views": [
+    { "view": "nexus.v_capital_map_operating_summary", "exists": true, "has_rows": true, "column_count": 11 },
+    { "view": "nexus.v_broker_connection_health", "exists": true, "has_rows": true, "column_count": 24 },
+    { "view": "nexus.v_automation_intake_queue", "exists": true, "has_rows": true, "column_count": 25 },
+    { "view": "nexus.v_research_radar_governance_health", "exists": true, "has_rows": true, "column_count": 10 },
+    { "view": "nexus.v_research_radar_state_status", "exists": true, "has_rows": true, "column_count": 13 },
+    { "view": "nexus.v_paper_order_policy_health", "exists": true, "has_rows": true, "column_count": 24 },
+    { "view": "nexus.v_signal_lineage", "exists": true, "has_rows": true, "column_count": 18 },
+    { "view": "nexus.v_shadow_mode_summary", "exists": true, "has_rows": true, "column_count": 21 }
+  ],
+  "summary_readback": {
+    "aggregate_only": true,
+    "row_data_exported": false,
+    "writes_attempted": false,
+    "views": [
+      { "view": "nexus.v_capital_map_operating_summary", "records": 2, "active_signals": 1, "active_constraints": 3, "capital_flows": 1, "company_exposures": 123, "current_decisions": 1, "open_outcomes": 1, "highest_pressure": 60 },
+      { "view": "nexus.v_broker_connection_health", "connections": 1, "live_trading_enabled": 0, "trading_blocked": 0, "transfers_blocked": 0, "accounts_blocked": 0 },
+      { "view": "nexus.v_automation_intake_queue", "intake_items": 3, "pending_review": 0, "reviewed": 0, "admitted": 0 },
+      { "view": "nexus.v_research_radar_governance_health", "state_lanes": 5, "sources": 24, "pending_signals": 14, "lane_violations": 0, "source_violations": 0, "signal_violations": 0, "scraper_violations": 0, "ticker_link_violations": 0 },
+      { "view": "nexus.v_research_radar_state_status", "lanes": 5, "scraper_execution_disabled": 5, "thesis_promotion_blocked": 5, "trade_action_blocked": 5, "pending_signals": 14 },
+      { "view": "nexus.v_paper_order_policy_health", "policies": 2, "live_trading_enabled": 0, "human_confirmation_required": 2, "proposals": 0, "submitted_orders": 0 },
+      { "view": "nexus.v_signal_lineage", "signals": 9, "capital_maps": 1, "highest_pressure": 60, "evidenced_signals": 9 },
+      { "view": "nexus.v_shadow_mode_summary", "experiments": 1, "intents": 14, "observed_intents": 14, "eligible_intents": 0, "blocked_intents": 0, "sends_orders_enabled": 0, "order_submission_enabled": 0, "order_submission_attempted": 0 }
+    ]
+  }
+}
+
+
