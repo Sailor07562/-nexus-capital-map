@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-18T15:35:28.7532958-07:00",
+  "mode": "live bounded read-only Tracker mapping",
+  "approval": "explicit user approval for live Tracker mapping",
+  "target": {
+    "surface": "Tracker Sandbox",
+    "spreadsheet_title": "Nexus_Registry_v1 — TRACKER SANDBOX COPY — 2026-07-09",
+    "spreadsheet_id": "1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY",
+    "spreadsheet_url": "https://docs.google.com/spreadsheets/d/1czF0GkfnILFA1w-jEtFa7VyGjbGKpc0RPFV32S3_irY/edit",
+    "locale": "en_US",
+    "time_zone": "Etc/GMT",
+    "discovered_sheet_count": 53,
+    "grid_default": {
+      "row_count": 1000,
+      "column_count": 26
+    }
+  },
+  "approved_mapped_tabs": [
+    {
+      "title": "Index",
+      "sheet_id": 2039797444,
+      "sheet_index": 16,
+      "grid": { "row_count": 1000, "column_count": 26 },
+      "bounded_reads": ["A1:Z8"],
+      "observed_header_columns": [
+        "index_id", "registry_name", "registry_type", "tab_name", "primary_id_prefix",
+        "status", "created_date", "governing_doctrine", "notes"
+      ],
+      "candidate_read_key": "index_id",
+      "use": "registry index and vocabulary health"
+    },
+    {
+      "title": "Authority",
+      "sheet_id": 475587654,
+      "sheet_index": 10,
+      "grid": { "row_count": 1000, "column_count": 26 },
+      "bounded_reads": ["A1:Z8"],
+      "observed_header_columns": [
+        "authority_id", "authority_name", "authority_type", "authority_scope", "authority_holder",
+        "authority_status", "created_date", "governing_doctrine", "notes"
+      ],
+      "candidate_read_key": "authority_id",
+      "use": "authority-map reference"
+    },
+    {
+      "title": "Registry_Test_Log",
+      "sheet_id": 877240417,
+      "sheet_index": 24,
+      "grid": { "row_count": 1000, "column_count": 26 },
+      "bounded_reads": ["A1:Z8", "A9:Z25"],
+      "observed_header_columns": [
+        "test_id", "test_date", "test_area", "test_result", "verified_records",
+        "status", "notes", "governing_doctrine", "notes"
+      ],
+      "duplicate_header_columns": ["notes"],
+      "candidate_read_key": "test_id",
+      "use": "evidence and continuity queue"
+    }
+  ],
+  "authority": {
+    "semantic_authority": "PostgreSQL",
+    "tracker_role": "operational visibility and controlled test surface"
+  },
+  "safety": {
+    "read_only": true,
+    "write_capability": false,
+    "writes_attempted": false,
+    "records_written": 0,
+    "promotion_status": "HOLD",
+    "architecture_status": "FROZEN",
+    "reconciliation_required_before_any_future_write": true
+  }
+}
