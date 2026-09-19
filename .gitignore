@@ -1,6 +1,7 @@
 # Secrets and credentials
 .env
 .env.*
+!.env.example
 *.key
 *.pem
 *.p12
@@ -33,4 +34,3 @@ venv/
 # Local tool state
 .n8n/
 .pgadmin/
-
