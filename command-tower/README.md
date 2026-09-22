@@ -19,6 +19,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - The bounded live status adapter passed a fresh read-only refresh through `nexus_command_tower_ro`; it emits eight aggregate summaries with no row export or write capability.
 - The loopback status endpoint passed a self-test against the approved live scalar payload; the browser remains disconnected from PostgreSQL.
 - When served by the loopback endpoint, `CommandTower.html` hydrates the bounded live scalar panel from `GET /status`; opening the file directly remains fixture-safe.
+- When served by the loopback endpoint, `CommandTower.html` polls `GET /status` every 15 seconds and displays the last bounded payload capture time; the endpoint rereads the approved payload file on each request so a fresh adapter refresh appears without restarting the server.
+- To open the live-polling view, serve the approved live payload through the loopback endpoint and open `http://127.0.0.1:58883/CommandTower.html`; opening `CommandTower.html` directly remains fixture-safe and intentionally does not connect to PostgreSQL.
 - Event Ledger Workflow 007 passed a bounded n8n Sandbox run with governed record/readback/idempotent replay; broader activation remains held.
 - The Workflow 007 receipt has a Tracker-shaped review projection with no guessed fields, no row key, and no write path.
 - The versioned Integration Registry records exact Airtable sandbox table/field identities and the three approved Tracker tabs; its verification receipt is `CommandTower-Integration-Registry-Verification.md`.

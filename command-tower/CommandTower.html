@@ -28,7 +28,7 @@
       </aside>
       <main id="overview">
         <header class="top"><div><p class="eyebrow">Nexus Capital Map</p><h1>Command Tower</h1><p class="sub">Operator view of health, evidence, gates, and movement.</p></div><span class="badge" id="sourceBadge">STRUCTURE FROZEN</span></header>
-        <section class="section" id="live-status" data-live-status><h2>Local live status <span class="quiet" id="liveStatusMode">· fixture-safe file mode</span></h2><div class="adapter-meta"><span class="adapter-pill" id="liveStatusIdentity">source: checked-in fixture</span><span class="adapter-pill" id="liveStatusViews">views: 8 / 8</span><span class="adapter-pill" id="liveStatusSafety">writes: disabled</span></div><div class="summary-grid"><div class="summary-tile"><strong>Capital map</strong><span id="liveCapitalMap">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Research Radar</strong><span id="liveResearchRadar">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Paper order policy</strong><span id="livePaperPolicy">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Shadow mode</strong><span id="liveShadowMode">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Broker safety</strong><span id="liveBrokerSafety">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Alpaca Paper health</strong><span id="liveAlpacaPaper">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Signal lineage</strong><span id="liveSignalLineage">Open through the loopback endpoint to refresh.</span></div></div></section>
+        <section class="section" id="live-status" data-live-status><h2>Local live status <span class="quiet" id="liveStatusMode">· fixture-safe file mode</span></h2><div class="adapter-meta"><span class="adapter-pill" id="liveStatusIdentity">source: checked-in fixture</span><span class="adapter-pill" id="liveStatusViews">views: 8 / 8</span><span class="adapter-pill" id="liveStatusSafety">writes: disabled</span><span class="adapter-pill" id="liveStatusRefresh">auto-refresh: loopback endpoint only</span></div><div class="summary-grid"><div class="summary-tile"><strong>Capital map</strong><span id="liveCapitalMap">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Research Radar</strong><span id="liveResearchRadar">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Paper order policy</strong><span id="livePaperPolicy">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Shadow mode</strong><span id="liveShadowMode">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Broker safety</strong><span id="liveBrokerSafety">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Alpaca Paper health</strong><span id="liveAlpacaPaper">Open through the loopback endpoint to refresh.</span></div><div class="summary-tile"><strong>Signal lineage</strong><span id="liveSignalLineage">Open through the loopback endpoint to refresh.</span></div></div></section>
         <section class="grid" aria-label="Current summary">
           <div class="card"><div class="k">Current cycle</div><div class="v">—</div><span class="state unknown">● Unknown</span></div>
           <div class="card"><div class="k">System health</div><div class="v">8 / 8</div><span class="state verified">● Read-only views verified</span></div>
@@ -74,39 +74,51 @@
     </div>
     <script>
       (() => {
+        const refreshIntervalMs = 15000;
         const liveMode = window.location.protocol === 'http:' && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost');
         if (!liveMode) return;
         const byId = (id) => document.getElementById(id);
         const summary = (payload, view) => payload.summaries.find((item) => item.view === `nexus.${view}`) || {};
-        const set = (id, value) => { byId(id).textContent = value; };
-        fetch('/status', { cache: 'no-store' }).then((response) => {
-          if (!response.ok) throw new Error(`status ${response.status}`);
-          return response.json();
-        }).then((payload) => {
-          if (payload.source_mode !== 'approved-bounded-live-readonly' || payload.write_capability !== false) throw new Error('live safety boundary failed');
-          const capital = summary(payload, 'v_capital_map_operating_summary');
-          const radar = summary(payload, 'v_research_radar_governance_health');
-          const paper = summary(payload, 'v_paper_order_policy_health');
-          const shadow = summary(payload, 'v_shadow_mode_summary');
-          const broker = summary(payload, 'v_broker_connection_health');
-          const lineage = summary(payload, 'v_signal_lineage');
-          set('liveStatusMode', '· approved bounded live readback');
-          set('liveStatusIdentity', `source: ${payload.target.role}`);
-          set('liveStatusViews', `views: ${payload.view_count} / ${payload.summary_count} summaries`);
-          set('liveStatusSafety', `writes: ${payload.write_capability ? 'enabled' : 'disabled'} · promotion: ${payload.promotion_state}`);
-          set('adapterModeNote', 'Approved bounded live readback');
-          set('sourceBadge', 'LIVE READ-ONLY');
-          set('liveCapitalMap', `${capital.records} records · ${capital.active_signals} active signals · ${capital.active_constraints} constraints · peak pressure ${capital.highest_pressure}`);
-          set('liveResearchRadar', `${radar.state_lanes} lanes · ${radar.sources} sources · ${radar.pending_signals} pending signals · ${radar.lane_violations + radar.source_violations + radar.signal_violations + radar.scraper_violations + radar.ticker_link_violations} violations`);
-           set('livePaperPolicy', `${paper.policies} policies · ${paper.proposals} proposals · ${paper.submitted_orders} submitted orders · ${paper.human_confirmation_required} human confirmations required`);
-           set('liveShadowMode', `${shadow.experiments} experiments · ${shadow.intents} intents · ${shadow.eligible_intents} eligible · ${shadow.order_submission_attempted} order attempts`);
-           set('liveBrokerSafety', `${broker.connections} connections · live trading ${broker.live_trading_enabled ? 'enabled' : 'disabled'} · trading blocks ${broker.trading_blocked}`);
-           set('liveAlpacaPaper', `${paper.policies} policies · ${paper.submitted_orders} submitted orders · live trading ${broker.live_trading_enabled ? 'enabled' : 'disabled'} · human confirmation required`);
-           set('liveSignalLineage', `${lineage.signals} signals · ${lineage.evidenced_signals} evidenced · ${lineage.capital_maps} capital maps · peak pressure ${lineage.highest_pressure}`);
-          set('statusFooter', 'Loopback live scalar readback · Direct browser-to-PostgreSQL connection disabled · No automation controls · No credentials');
-        }).catch(() => {
-          set('liveStatusMode', '· live endpoint unavailable; fixture-safe mode retained');
-        });
+        const set = (id, value) => { const element = byId(id); if (element) element.textContent = value; };
+        let refreshInFlight = false;
+        const refresh = async () => {
+          if (refreshInFlight) return;
+          refreshInFlight = true;
+          try {
+            const response = await fetch('/status', { cache: 'no-store' });
+            if (!response.ok) throw new Error(`status ${response.status}`);
+            const payload = await response.json();
+            if (payload.source_mode !== 'approved-bounded-live-readonly' || payload.write_capability !== false) throw new Error('live safety boundary failed');
+            const capital = summary(payload, 'v_capital_map_operating_summary');
+            const radar = summary(payload, 'v_research_radar_governance_health');
+            const paper = summary(payload, 'v_paper_order_policy_health');
+            const shadow = summary(payload, 'v_shadow_mode_summary');
+            const broker = summary(payload, 'v_broker_connection_health');
+            const lineage = summary(payload, 'v_signal_lineage');
+            set('liveStatusMode', '· approved bounded live readback · polling every 15 seconds');
+            set('liveStatusIdentity', `source: ${payload.target.role}`);
+            set('liveStatusViews', `views: ${payload.view_count} / ${payload.summary_count} summaries`);
+            set('liveStatusSafety', `writes: ${payload.write_capability ? 'enabled' : 'disabled'} · promotion: ${payload.promotion_state}`);
+            set('liveStatusRefresh', `last refresh: ${new Date(payload.captured_at).toLocaleTimeString()}`);
+            set('adapterModeNote', 'Approved bounded live readback');
+            set('sourceBadge', 'LIVE READ-ONLY');
+            set('liveCapitalMap', `${capital.records} records · ${capital.active_signals} active signals · ${capital.active_constraints} constraints · peak pressure ${capital.highest_pressure}`);
+            set('liveResearchRadar', `${radar.state_lanes} lanes · ${radar.sources} sources · ${radar.pending_signals} pending signals · ${radar.lane_violations + radar.source_violations + radar.signal_violations + radar.scraper_violations + radar.ticker_link_violations} violations`);
+            set('livePaperPolicy', `${paper.policies} policies · ${paper.proposals} proposals · ${paper.submitted_orders} submitted orders · ${paper.human_confirmation_required} human confirmations required`);
+            set('liveShadowMode', `${shadow.experiments} experiments · ${shadow.intents} intents · ${shadow.eligible_intents} eligible · ${shadow.order_submission_attempted} order attempts`);
+            set('liveBrokerSafety', `${broker.connections} connections · live trading ${broker.live_trading_enabled ? 'enabled' : 'disabled'} · trading blocks ${broker.trading_blocked}`);
+            set('liveAlpacaPaper', `${paper.policies} policies · ${paper.submitted_orders} submitted orders · live trading ${broker.live_trading_enabled ? 'enabled' : 'disabled'} · human confirmation required`);
+            set('liveSignalLineage', `${lineage.signals} signals · ${lineage.evidenced_signals} evidenced · ${lineage.capital_maps} capital maps · peak pressure ${lineage.highest_pressure}`);
+            set('statusFooter', 'Loopback live scalar readback · Direct browser-to-PostgreSQL connection disabled · No automation controls · No credentials');
+          } catch {
+            set('liveStatusMode', '· live endpoint unavailable; fixture-safe mode retained');
+            set('liveStatusRefresh', 'last refresh: unavailable');
+          } finally {
+            refreshInFlight = false;
+          }
+        };
+        refresh();
+        window.setInterval(refresh, refreshIntervalMs);
       })();
     </script>
   </body>
