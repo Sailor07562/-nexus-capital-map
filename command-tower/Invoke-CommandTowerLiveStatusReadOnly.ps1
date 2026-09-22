@@ -6,7 +6,8 @@ param(
     [string]$Schema = 'nexus',
     [string]$Role = 'nexus_command_tower_ro',
     [string]$OutputPath = (Join-Path $PSScriptRoot 'command-tower-live-status-payload.json'),
-    [string]$PsqlPath = 'C:\Program Files\PostgreSQL\18\bin\psql.exe'
+    [string]$PsqlPath = 'C:\Program Files\PostgreSQL\18\bin\psql.exe',
+    [string]$ErrorReceiptPath = (Join-Path $PSScriptRoot 'CommandTower-Live-Status-Refresh-Error.md')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -148,16 +149,37 @@ $form.Controls.Add($cancelButton)
 $form.AcceptButton = $okButton
 $form.CancelButton = $cancelButton
 $null = $form.ShowDialog()
-if ($form.Tag -ne 'OK') { throw 'Live status refresh was canceled.' }
+if ($form.Tag -ne 'OK') {
+    Write-Output 'Live status refresh canceled; no payload was written.'
+    exit 2
+}
 $rolePassword = $passwordBox.Text | ConvertTo-SecureString -AsPlainText -Force
 $passwordBox.Clear()
 $bstr = [IntPtr]::Zero
 $previousPgPassword = [Environment]::GetEnvironmentVariable('PGPASSWORD', 'Process')
 
+function Get-SafeErrorMessage([object]$ErrorRecord) {
+    $message = if ($ErrorRecord -is [System.Management.Automation.ErrorRecord]) {
+        $ErrorRecord.Exception.Message
+    } else {
+        [string]$ErrorRecord
+    }
+    if ([string]::IsNullOrWhiteSpace($message)) { return 'Unknown local refresh error.' }
+    return $message.Trim()
+}
+
 function Invoke-ReadOnlyPsql([string]$Sql) {
     $readOnlySql = "BEGIN; SET TRANSACTION READ ONLY; $Sql; COMMIT;"
-    $result = $readOnlySql | & $PsqlPath -X -w -qAt -F '|' -P null='' -h $HostName -p $Port -U $Role -d $Database -v ON_ERROR_STOP=1 -f - 2>&1
-    if ($LASTEXITCODE -ne 0) { throw (($result | Out-String).Trim()) }
+    try {
+        $result = $readOnlySql | & $PsqlPath -X -w -qAt -F '|' -P null='' -h $HostName -p $Port -U $Role -d $Database -v ON_ERROR_STOP=1 -f - 2>&1
+    } catch {
+        throw "PostgreSQL read-only command failed: $(Get-SafeErrorMessage $_)"
+    }
+    if ($LASTEXITCODE -ne 0) {
+        $details = (($result | Out-String).Trim())
+        if ([string]::IsNullOrWhiteSpace($details)) { $details = "psql exited with code $LASTEXITCODE." }
+        throw "PostgreSQL read-only command failed: $details"
+    }
     return (($result | Out-String).Trim())
 }
 
@@ -208,6 +230,35 @@ try {
     }
     $payload | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $OutputPath -Encoding UTF8
     $payload | ConvertTo-Json -Depth 10
+}
+catch {
+    $safeMessage = Get-SafeErrorMessage $_
+    $errorReceipt = @(
+        '# Command Tower Live Status Refresh Error',
+        '',
+        "Captured: $((Get-Date).ToString('o'))",
+        'Status: **FAIL**',
+        '',
+        ('Target: {0}:{1}/{2}' -f $HostName, $Port, $Database),
+        ('Schema: {0}' -f $Schema),
+        ('Role: {0}' -f $Role),
+        '',
+        'No payload was written.',
+        '',
+        "Error: $safeMessage"
+    ) -join [Environment]::NewLine
+    try {
+        $errorReceipt | Set-Content -LiteralPath $ErrorReceiptPath -Encoding UTF8
+    } catch {
+        # Preserve the original failure if the diagnostic receipt cannot be written.
+    }
+    [System.Windows.Forms.MessageBox]::Show(
+        "Live read-only refresh failed.`n`n$safeMessage`n`nNo payload was written.",
+        'Command Tower - Read-Only Refresh',
+        [System.Windows.Forms.MessageBoxButtons]::OK,
+        [System.Windows.Forms.MessageBoxIcon]::Error
+    ) | Out-Null
+    exit 1
 }
 finally {
     [Environment]::SetEnvironmentVariable('PGPASSWORD', $previousPgPassword, 'Process')
