@@ -49,14 +49,23 @@ function sendHtml(response, html) {
   response.end(html);
 }
 
-function createStatusServer(payload, html = null) {
-  return createServer((request, response) => {
+function createStatusServer(payload, html = null, payloadPath = null) {
+  return createServer(async (request, response) => {
     if (request.method !== 'GET') {
       sendJson(response, 405, { error: 'method_not_allowed', read_only: true, write_capability: false });
       return;
     }
+    let currentPayload = payload;
+    if (payloadPath) {
+      try {
+        currentPayload = await loadPayload(payloadPath);
+      } catch {
+        sendJson(response, 500, { error: 'bounded_payload_unavailable', read_only: true, write_capability: false });
+        return;
+      }
+    }
     if (request.url === '/healthz') {
-      sendJson(response, 200, { status: 'ok', mode: payload.source_mode, read_only: true, write_capability: false });
+      sendJson(response, 200, { status: 'ok', mode: currentPayload.source_mode, read_only: true, write_capability: false });
       return;
     }
     if (html && (request.url === '/' || request.url === '/CommandTower.html')) {
@@ -64,7 +73,7 @@ function createStatusServer(payload, html = null) {
       return;
     }
     if (request.url === '/status') {
-      sendJson(response, 200, payload);
+      sendJson(response, 200, currentPayload);
       return;
     }
     sendJson(response, 404, { error: 'not_found' });
@@ -106,7 +115,7 @@ if (args.get('selfTest')) {
   const payload = await loadPayload(payloadPath);
   const htmlPath = args.get('html') ?? resolve(here, 'CommandTower.html');
   const html = await readFile(htmlPath, 'utf8');
-  const server = createStatusServer(payload, html);
+  const server = createStatusServer(payload, html, payloadPath);
   const host = args.get('host') ?? '127.0.0.1';
   const port = args.get('port') ?? 58883;
   server.listen(port, host, () => {
