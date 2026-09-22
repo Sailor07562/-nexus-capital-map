@@ -133,10 +133,12 @@ $okButton = New-Object System.Windows.Forms.Button
 $okButton.Text = 'Run read-only refresh'
 $okButton.Location = New-Object System.Drawing.Point(420, 135)
 $okButton.Size = New-Object System.Drawing.Size(150, 30)
+$okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
 $okButton.Add_Click({
-    if ([string]::IsNullOrWhiteSpace($passwordBox.Text)) { $statusLabel.Text = 'Password is required.'; return }
-    $form.Tag = 'OK'
-    $form.Close()
+    if ([string]::IsNullOrWhiteSpace($passwordBox.Text)) {
+        $statusLabel.Text = 'Password is required.'
+        $form.DialogResult = [System.Windows.Forms.DialogResult]::None
+    }
 })
 $form.Controls.Add($okButton)
 
@@ -144,12 +146,12 @@ $cancelButton = New-Object System.Windows.Forms.Button
 $cancelButton.Text = 'Cancel'
 $cancelButton.Location = New-Object System.Drawing.Point(575, 135)
 $cancelButton.Size = New-Object System.Drawing.Size(60, 30)
-$cancelButton.Add_Click({ $form.Tag = 'Cancel'; $form.Close() })
+$cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
 $form.Controls.Add($cancelButton)
 $form.AcceptButton = $okButton
 $form.CancelButton = $cancelButton
-$null = $form.ShowDialog()
-if ($form.Tag -ne 'OK') {
+$dialogResult = $form.ShowDialog()
+if ($dialogResult -ne [System.Windows.Forms.DialogResult]::OK) {
     Write-Output 'Live status refresh canceled; no payload was written.'
     exit 2
 }
