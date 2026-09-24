@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "inventory_status": "OFFICIAL",
+  "registry": "nexus-command-tower-adapter-stack",
+  "captured_at": "2026-09-24",
+  "authority": "PostgreSQL",
+  "adapter_count": 8,
+  "integration_fabric_exclusions": [
+    {
+      "id": "google-drive",
+      "name": "Google Drive",
+      "classification": "Integration Fabric",
+      "role": "Evidence, backup, archive, and recovery surface"
+    }
+  ],
+  "global_safety": {
+    "paper_only": true,
+    "command_tower_write_capability": false,
+    "broker_live_trading": false,
+    "transfer_authority": false,
+    "credentials_in_registry": false
+  },
+  "adapters": [
+    {"id":"postgres-authority","name":"PostgreSQL authority","direction":"canonical store","source":"n8n / approved functions","target":"nexus","state":"VERIFIED","write_boundary":"Append-only governed records; no credentials stored"},
+    {"id":"n8n-sandbox-executor","name":"n8n Sandbox executor","direction":"execution","source":"Workflow 015 / Sandbox / 06:30 ET weekdays","target":"PostgreSQL + bounded Paper endpoint","state":"ACTIVE · BOUNDED","write_boundary":"Workflow-scoped; one $25 maximum Paper submission per day; no live trading or transfer authority"},
+    {"id":"alpaca-paper-receipt","name":"Alpaca Paper receipt","direction":"receipt intake","source":"Alpaca Paper response","target":"n8n → PostgreSQL","state":"PAPER-ONLY","write_boundary":"Sandbox automated policy; current allowlist required; one submission per proposal; no retry inferred"},
+    {"id":"command-tower-status","name":"Command Tower live status","direction":"read","source":"PostgreSQL approved views","target":"Loopback status → Command Tower","state":"VERIFIED","write_boundary":"nexus_command_tower_ro; aggregate-only; writes disabled"},
+    {"id":"ncms-trade-log-projection","name":"NCMS Trade Log projection","direction":"projection","source":"Workflow 015 PostgreSQL submission receipts","target":"Nexus Capital Map Sandbox / Trade Log","state":"WIRED · FIRST RECEIPT PENDING","write_boundary":"Target-only Sheet upsert by Event ID; no broker access; PostgreSQL remains canonical"},
+    {"id":"github-provenance","name":"GitHub provenance","direction":"version / review","source":"Repository + PR history","target":"Source and governance vault","state":"VERIFIED","write_boundary":"Source changes require review; no runtime execution authority"},
+    {"id":"airtable-registry","name":"Airtable registry","direction":"read / registry","source":"Sandbox base metadata","target":"Operational registry visibility","state":"BOUNDED READ","write_boundary":"Metadata and evidence surface; PostgreSQL remains authority"},
+    {"id":"company-evidence-search","name":"Company Evidence Search","direction":"research intake","source":"SEC EDGAR / issuer IR / regulator and permit dockets / ISO-RTO / Drive","target":"Research Radar + evidence packet","state":"DEFINED · READ-ONLY","write_boundary":"No broker, order, trade, transfer, or credential writes; human-reviewed research receipt only"}
+  ]
+}

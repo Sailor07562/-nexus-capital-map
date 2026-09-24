@@ -58,6 +58,8 @@ This directory contains the reviewed Command Tower read-only integration artifac
 - `Verify-CommandTowerTrackerEventProjection.ps1`
 - `CommandTower-Tracker-Event-Projection-Verification.md`
 - `command-tower-integration-registry.json`
+- `CommandTower-Adapter-Inventory.md`
+- `command-tower-adapter-registry.json`
 - `Verify-CommandTowerIntegrationRegistry.ps1`
 - `CommandTower-Integration-Registry-Verification.md`
 - `command-tower-alpaca-paper-health.json`
