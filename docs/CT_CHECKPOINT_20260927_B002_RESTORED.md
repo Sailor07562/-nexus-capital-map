@@ -48,3 +48,45 @@ Static checks passed:
   response or logs.
 - B-001 TCP-only PostgreSQL behavior is retained only as historical protocol
   documentation; B-002 is the active contract.
+
+## Future restore runbook
+
+Use this section if the Command Tower regresses to B-001 or loses its
+PostgreSQL verification again.
+
+1. Preserve the current checkout first. If it contains uncommitted work, stop
+   and save that work before restoring.
+2. Return to the known-good checkpoint:
+
+   ```powershell
+   git switch --detach CT-B002-RESTORED-20260927
+   git show -s --format='%H %D %s' CT-B002-RESTORED-20260927
+   ```
+
+   The restored source must contain the B-002 contract and
+   `nexus_command_tower_ro` role check. Do not rebuild the verification from
+   the older B-001 TCP-only implementation.
+3. Confirm the local ignored `.env` provides the connection settings without
+   printing or committing the password:
+   `NEXUS_POSTGRES_HOST`, `NEXUS_POSTGRES_PORT`,
+   `NEXUS_POSTGRES_DATABASE`, `NEXUS_POSTGRES_PASSWORD`, and `NEXUS_PSQL_PATH`.
+4. Start the app using the local environment:
+
+   ```powershell
+   node --env-file=.env app/server.js
+   ```
+
+5. Open `http://127.0.0.1:8080/api/live-status` and accept PostgreSQL as
+   restored only when all of these are true:
+
+   - `contract` is `B-002 authenticated read-only PostgreSQL verification`.
+   - PostgreSQL `state` is `verified`.
+   - The evidence reports `current_user=nexus_command_tower_ro`.
+   - The evidence reports the exact query
+     `SELECT current_user, current_database();`.
+6. If the result is `blocked` or `failed`, stop. Do not fall back to TCP-only
+   proof, change passwords or privileges, edit `pg_hba.conf`, run migrations,
+   mutate n8n, or call a broker.
+7. Record the dated endpoint result in a new checkpoint receipt and commit it.
+   Keep this checkpoint tag as the restore anchor unless a later verified
+   checkpoint is explicitly created.
