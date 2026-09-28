@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "case_id": "SYNTHETIC-GRID-001",
+  "revision": 1,
+  "revision_of": null,
+  "as_of": "2026-09-28",
+  "synthetic": true,
+  "thesis": {
+    "id": "SYNTHETIC-THESIS",
+    "version": "1",
+    "assumption": "Funded grid capacity constraints can create contracted equipment demand, subject to delivery and cost risk.",
+    "effect": "SUPPORTS"
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "event_id": "EVENT-ORDER",
+      "source": "Fictional North River regulator order",
+      "locator": "synthetic://order/section-4",
+      "claim": "A fictional connection is conditional on additional substation capacity; a developer-funded $30m program is approved.",
+      "date": "2026-09-01",
+      "review_after": "2026-12-01",
+      "source_type": "PRIMARY",
+      "verification": "VERIFIED",
+      "relevance": "CURRENT",
+      "synthetic": true
+    },
+    {
+      "id": "E2",
+      "event_id": "EVENT-CONTRACT",
+      "source": "Fictional executed equipment contract",
+      "locator": "synthetic://contract/sections-2-5",
+      "claim": "Switchgear Works, a fictional supplier, receives a $30m equipment contract funded from developer deposits, with delivery targeted for 2027.",
+      "date": "2026-09-03",
+      "review_after": "2026-12-01",
+      "source_type": "PRIMARY",
+      "verification": "VERIFIED",
+      "relevance": "CURRENT",
+      "synthetic": true
+    },
+    {
+      "id": "E3",
+      "event_id": "EVENT-COST",
+      "source": "Fictional supplier estimate",
+      "locator": "synthetic://estimate/line-7",
+      "claim": "Estimated fulfillment cost is $25m, conditional on materials and labor assumptions; no profit is realized yet.",
+      "date": "2026-09-05",
+      "review_after": "2026-10-05",
+      "source_type": "PRIMARY",
+      "verification": "VERIFIED",
+      "relevance": "CURRENT",
+      "synthetic": true
+    },
+    {
+      "id": "E4",
+      "event_id": "EVENT-RISK",
+      "source": "Fictional project risk register",
+      "locator": "synthetic://risk/items-1-3",
+      "claim": "Energization also requires a line permit; cancellation can reduce orders, and materials inflation can exceed the cost estimate.",
+      "date": "2026-09-07",
+      "review_after": "2026-10-07",
+      "source_type": "PRIMARY",
+      "verification": "VERIFIED",
+      "relevance": "CURRENT",
+      "synthetic": true
+    },
+    {
+      "id": "N1",
+      "event_id": "EVENT-ORDER",
+      "source": "Fictional news account of E1",
+      "locator": "synthetic://news/order-summary",
+      "claim": "Repeats the order; not a separate evidentiary event.",
+      "date": "2026-09-02",
+      "review_after": "2026-12-01",
+      "source_type": "NEWS",
+      "verification": "VERIFIED",
+      "relevance": "CURRENT",
+      "synthetic": true
+    }
+  ],
+  "chain": {
+    "evidence": {
+      "statement": "The fictional program is approved and an equipment contract is executed.",
+      "basis": "FACT",
+      "rationale": "E1 establishes the approval; E2 separately establishes the award.",
+      "evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "unknowns": []
+    },
+    "constraint": {
+      "statement": "The connection cannot proceed without additional substation capacity.",
+      "basis": "FACT",
+      "rationale": "The condition in E1 makes capacity a necessary prerequisite for this fictional connection.",
+      "evidence_ids": [
+        "E1"
+      ],
+      "unknowns": []
+    },
+    "solution": {
+      "statement": "Add the required substation capacity and secure the line permit.",
+      "basis": "INFERENCE",
+      "rationale": "The order sets the required function; E4 identifies a separate permission dependency.",
+      "evidence_ids": [
+        "E1",
+        "E4"
+      ],
+      "unknowns": []
+    },
+    "spending": {
+      "statement": "Developer deposits fund a $30m contract to Switchgear Works.",
+      "basis": "FACT",
+      "rationale": "The funding and award are expressly connected in E2; this is contracted spending, not realized revenue.",
+      "evidence_ids": [
+        "E2"
+      ],
+      "unknowns": []
+    },
+    "thesis": {
+      "statement": "The case supports the contracted-demand assumption conditionally.",
+      "basis": "INFERENCE",
+      "rationale": "A required capacity addition becomes a funded award; revenue and profit remain dependent on delivery, permits and costs.",
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "unknowns": []
+    }
+  },
+  "links": {
+    "evidence->constraint": {
+      "statement": "The order identifies a binding capacity condition.",
+      "basis": "INFERENCE",
+      "rationale": "The connection is conditional rather than simply coincident with equipment demand.",
+      "evidence_ids": [
+        "E1"
+      ],
+      "unknowns": []
+    },
+    "constraint->solution": {
+      "statement": "Capacity addition addresses the named restriction.",
+      "basis": "INFERENCE",
+      "rationale": "Equipment is necessary for this specified design, while a separate permit remains necessary for energization.",
+      "evidence_ids": [
+        "E1",
+        "E4"
+      ],
+      "unknowns": []
+    },
+    "solution->spending": {
+      "statement": "The approved design has an executed funding and procurement path.",
+      "basis": "INFERENCE",
+      "rationale": "The contract identifies the payer, mechanism and recipient, connecting the required work to an award.",
+      "evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "unknowns": []
+    },
+    "spending->thesis": {
+      "statement": "A funded award supports demand, with conditional economic capture.",
+      "basis": "INFERENCE",
+      "rationale": "E2 supports demand; E3 and E4 constrain any inference about profit and timing.",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "unknowns": []
+    }
+  },
+  "dimensions": {
+    "materiality": {
+      "statement": "The $30m award is material to the specific demand assumption in this case.",
+      "basis": "INFERENCE",
+      "rationale": "This is a case-level judgment; no portfolio weight, issuer-wide earnings impact or valuation conclusion is asserted.",
+      "evidence_ids": [
+        "E2"
+      ],
+      "unknowns": []
+    },
+    "timing": {
+      "statement": "Contracted now; target delivery in 2027; recognition has not occurred.",
+      "basis": "FACT",
+      "rationale": "Contract timing must not be collapsed into present revenue.",
+      "evidence_ids": [
+        "E2"
+      ],
+      "unknowns": []
+    },
+    "value_capture": {
+      "statement": "The price exceeds the estimated cost by $5m under the stated assumptions.",
+      "basis": "INFERENCE",
+      "rationale": "This is conditional gross project economics, not realized profit, net income or a valuation recommendation; cost overruns can eliminate it.",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "unknowns": []
+    },
+    "connected_effects": {
+      "statement": "The next possible bottleneck is line-permit approval.",
+      "basis": "INFERENCE",
+      "rationale": "Equipment alone cannot energize the connection when the separate permit is required.",
+      "evidence_ids": [
+        "E4"
+      ],
+      "unknowns": []
+    },
+    "disconfirmation": {
+      "statement": "Cancellation or costs exceeding contract value would weaken the interpretation.",
+      "basis": "INFERENCE",
+      "rationale": "The risk register identifies concrete mechanisms that can reduce the award or its economic benefit.",
+      "evidence_ids": [
+        "E3",
+        "E4"
+      ],
+      "unknowns": []
+    },
+    "learning": {
+      "statement": "Initial belief: funded constraints can produce awards; revisit after delivery.",
+      "basis": "INFERENCE",
+      "rationale": "This initial packet preserves the assumption and identifies delivery/cost outcomes to compare later. No outcome is invented.",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "unknowns": []
+    }
+  },
+  "spending": {
+    "payer": "Fictional developer",
+    "mechanism": "Developer deposits funding the executed contract",
+    "category": "Substation equipment",
+    "recipient": "Fictional Switchgear Works",
+    "stage": "CONTRACTED",
+    "timing": "Target delivery 2027; revenue realization unconfirmed"
+  },
+  "alternatives": [
+    "Delay until the line permit is resolved.",
+    "Cancel the connection and apply contractual cancellation terms."
+  ],
+  "counterevidence_ids": [
+    "E4"
+  ],
+  "challenge_search": "Synthetic review examined all four fictional primary records, including cancellation, permitting and cost risks in E4. No external search was performed.",
+  "next_verification": "In a real case, obtain the permit decision, delivery milestones and updated cost evidence before concluding that revenue or profit is realized.",
+  "change_reason": "Initial synthetic demonstration of the five-stage chain and six reasoning dimensions.",
+  "outcome_observed": null
+}
