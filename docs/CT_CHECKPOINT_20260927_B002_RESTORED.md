@@ -49,6 +49,18 @@ Static checks passed:
 - B-001 TCP-only PostgreSQL behavior is retained only as historical protocol
   documentation; B-002 is the active contract.
 
+## Header identity restored
+
+The Command Tower header includes the restored Nexus Tree emblem, landscape
+backdrop, and glowing North Star marker. These assets are part of the checked-in
+frontend surface:
+
+- `frontend/assets/nexus-tree-emblem-v1.png`
+- `frontend/assets/command-tower-nexus-landscape-v1.png`
+
+The Tree and North Star belong in the header identity treatment. Do not move
+them into a separate dashboard card during a future restore.
+
 ## Future restore runbook
 
 Use this section if the Command Tower regresses to B-001 or loses its
