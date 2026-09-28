@@ -1,13 +1,25 @@
 const layers = [
   { id: "overview", label: "Overview", purpose: "Unified control plane for Nexus health, evidence, gates, and movement.", mission: "Is Nexus operationally coherent?", items: ["Mission-first operations", "Read-only cockpit", "Evidence before action", "Governed receipts"] },
-  { id: "infrastructure", label: "Infrastructure", purpose: "Keeps Nexus alive.", mission: "Is Nexus operational?", items: ["PostgreSQL", "Docker", "n8n", "GitHub", "Local runtime"] },
-  { id: "data", label: "Data", purpose: "Shows where truth and evidence live.", mission: "Is the data trustworthy?", items: ["PostgreSQL operational truth", "Drive doctrine and evidence", "Tracker observation", "Airtable legacy mirror"] },
-  { id: "intelligence", label: "Intelligence", purpose: "Surfaces what matters today.", mission: "What matters today?", items: ["Research Radar", "Consumer Stress Radar", "Resource Competition", "Capital Maps", "Constraint Engine"] },
-  { id: "stocks", label: "Stocks", purpose: "Capital exposure, public-equity research, watchlists, and paper/live boundaries.", mission: "Where is capital exposed?", items: ["Portfolio", "ETF allocations", "Watchlists", "Research candidates", "Paper trading", "Cash boundaries"] },
+  { id: "nexus-watch", label: "Nexus Watch", purpose: "One receipt and read-only monitoring across the governed surface.", mission: "What needs attention right now?", items: ["PostgreSQL evidence", "n8n health", "Future trades", "Next allowed action", "Provenance"] },
+  { id: "instruments", label: "Capital Map Coverage", purpose: "Operator-first coverage of instruments, workflows, paper boundaries, and authority.", mission: "Where is capital exposed?", items: ["Portfolio holdings", "ETF allocations", "Decision Engine rows", "Watchlists", "Paper boundaries"] },
+  { id: "future-trades", label: "Future Trades", purpose: "Proposals, scheduled intents, and broker-open Paper visibility.", mission: "What is proposed or scheduled?", items: ["Proposals", "Scheduled intents", "Broker-open Paper orders", "Timing rules", "Readback boundary"] },
+  { id: "intake-engine", label: "Intake Engine", purpose: "Interchangeable first-contact adapters under the fixed Governance Constitution.", mission: "What evidence may enter the system?", items: ["First contact", "Domain lanes", "Validation", "Deduplication", "Quarantine", "Human admission"] },
+  { id: "adapter-registry", label: "Adapter Registry", purpose: "One map of first-contact connectors, fetch-only by design.", mission: "Are connections bounded and observable?", items: ["PostgreSQL", "n8n", "Airtable", "Google Drive", "Tracker", "Broker boundary"] },
+  { id: "governance-engine", label: "Governance Engine", purpose: "Authority registry and boundary checks with the human stop intact.", mission: "Is execution authorized?", items: ["Purpose", "Authority", "Policy", "Human review", "Promotion gate", "Receipt"] },
+  { id: "infrastructure-context", label: "Infrastructure Context", purpose: "Signal context and replay checks for governed infrastructure research.", mission: "What context and lineage support this signal?", items: ["Signal lineage", "Context checks", "Replay anchor", "Evidence quality", "Read-only aggregate"] },
+  { id: "capital-deployment", label: "Capital Deployment Boundary", purpose: "Distributed controls where human approval remains the stop.", mission: "Can any capital move?", items: ["Policy gate", "Market gate", "Risk gate", "Cash gate", "Broker gate", "Human approval"] },
+  { id: "paper-reconciliation", label: "Paper Receipt Reconciliation", purpose: "Snapshot parity and currentness hold for Paper receipts; no new submission.", mission: "What actually happened in Paper?", items: ["Proposal", "Submission", "Broker status", "Fill state", "PostgreSQL receipt", "Currentness hold"] },
+  { id: "workflow-hygiene", label: "Workflow Hygiene", purpose: "Read-only disposition map for n8n workflows with no activation or deletion.", mission: "Which workflows are current, stale, or held?", items: ["Inventory", "Duplicate check", "Staleness", "Disposition", "Archive candidate", "No mutation"] },
+  { id: "architecture", label: "Nexus Architecture", purpose: "Canonical system map with lifecycle, authority, and source-of-truth relationships visible.", mission: "How does Nexus fit together?", items: ["PostgreSQL authority", "n8n executor", "CT cockpit", "Drive evidence", "Human authority", "Lifecycle"] },
+  { id: "investing", label: "Investing Engine", purpose: "Aggregate-only investing engine visibility with research and execution boundaries intact.", mission: "What is the engine allowed to know or do?", items: ["Engine status", "Candidates", "Policies", "Shadow intents", "Paper boundary", "Live trading gated"] },
+  { id: "engine-canon", label: "Engine Canon", purpose: "Full future-engine registry with declared purpose, boundaries, and receipts.", mission: "Which engines exist and under what rules?", items: ["Formal engines", "Candidates", "Purpose", "Authority", "Lifecycle", "Verification"] },
+  { id: "maintenance", label: "Maintenance Queue", purpose: "Bounded read-only first-officer queue for findings that need review.", mission: "What should be inspected next?", items: ["Attention findings", "Health checks", "Provenance", "Safe next action", "Human review", "No destructive mutation"] },
+  { id: "data", label: "Data", purpose: "Shows where truth and evidence live, including State Research Radar.", mission: "Is the data trustworthy?", items: ["PostgreSQL operational truth", "Drive doctrine and evidence", "Tracker observation", "Airtable legacy mirror", "State Research Radar"] },
   { id: "tools", label: "Tools", purpose: "Execution-capable tools stay visible but gated.", mission: "What can safely execute?", items: ["n8n workflows", "SQL migrations", "GitHub commits", "Alpaca gateways", "Promotion tools", "Backup tools"] },
-  { id: "adapters", label: "Adapters", purpose: "Connection layer between governed packets and external systems.", mission: "Are connections bounded and observable?", items: ["PostgreSQL adapter", "n8n adapter", "Airtable adapter", "Google Drive adapter", "Tracker adapter", "Broker adapter"] },
-  { id: "governance", label: "Governance", purpose: "Protects Nexus from unauthorized mutation.", mission: "Is execution authorized?", items: ["Freeze", "Promotion", "Audit", "Authority", "Registry", "Human review"] },
-  { id: "live-status", label: "Live Status", purpose: "Read-only runtime probes from the local CT app.", mission: "What is verifiably reachable right now?", items: [] }
+  { id: "live-status", label: "Live Status", purpose: "Read-only runtime probes from the local CT app.", mission: "What is verifiably reachable right now?", items: [] },
+  { id: "automation", label: "n8n Sandbox", purpose: "Local n8n source inventory and read-only visibility.", mission: "What automation is present without changing it?", items: ["Workflow inventory", "Activation state", "Source evidence", "Execution boundary", "No mutation"] },
+  { id: "foundation", label: "Foundation", purpose: "Future-engine governance principles and the frozen operating foundation.", mission: "What principles must every engine obey?", items: ["Declared purpose", "Explicit boundary", "PostgreSQL records", "Governance decides", "Human authorizes"] },
+  { id: "boundaries", label: "Boundaries", purpose: "Connection, authority, and evidence boundaries for the whole Command Tower.", mission: "What must remain separate?", items: ["PostgreSQL authority", "n8n executor", "CT cockpit", "Broker boundary", "No credentials", "No hidden execution"] }
 ];
 
 const statusRows = [
@@ -359,9 +371,9 @@ function route() {
   if (active.id === "overview") renderOverview();
   else if (active.id === "live-status") renderLiveStatus();
   else if (active.id === "data") renderData();
-  else if (active.id === "stocks") renderStocks();
+  else if (active.id === "stocks" || active.id === "instruments") renderStocks();
   else if (active.id === "tools") renderTools();
-  else if (active.id === "adapters") renderAdapters();
+  else if (active.id === "adapters" || active.id === "adapter-registry") renderAdapters();
   else renderLayer(active);
   navigation.querySelectorAll("a").forEach((link) => link.classList.toggle("active", link.dataset.page === active.id));
 }

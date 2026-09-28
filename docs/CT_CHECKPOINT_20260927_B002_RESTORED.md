@@ -61,6 +61,22 @@ frontend surface:
 The Tree and North Star belong in the header identity treatment. Do not move
 them into a separate dashboard card during a future restore.
 
+## Individual tabs restored
+
+The sidebar now opens each Command Tower lane independently instead of making
+the operator scan one combined surface. The restored tab set includes:
+
+`Overview`, `Nexus Watch`, `Capital Map Coverage`, `Future Trades`, `Intake
+Engine`, `Adapter Registry`, `Governance Engine`, `Infrastructure Context`,
+`Capital Deployment Boundary`, `Paper Receipt Reconciliation`, `Workflow
+Hygiene`, `Nexus Architecture`, `Investing Engine`, `Engine Canon`,
+`Maintenance Queue`, `Data`, `Tools`, `Live Status`, `n8n Sandbox`, `Foundation`,
+and `Boundaries`.
+
+The Tree/North Star header remains persistent while tabs change the content
+lane. The tab shell is display-only; no tab grants SQL, n8n, broker, trade, or
+transfer authority.
+
 ## Future restore runbook
 
 Use this section if the Command Tower regresses to B-001 or loses its
