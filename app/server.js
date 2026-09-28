@@ -144,5 +144,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(config.port, config.host, () => {
-  console.log(`${config.applicationName} B-001 verification listening on http://localhost:${config.port}`);
+  console.log(`${config.applicationName} B-002 verification listening on http://localhost:${config.port}`);
 });

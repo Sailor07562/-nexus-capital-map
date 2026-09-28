@@ -1,22 +1,15 @@
 import { execFile } from "node:child_process";
 import { existsSync } from "node:fs";
-import net from "node:net";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { config } from "./config.js";
 
 const execFileAsync = promisify(execFile);
-const repositoryRoot = new URL("..", import.meta.url).pathname;
+const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
+const B002_ROLE = "nexus_command_tower_ro";
+const B002_QUERY = "SELECT current_user, current_database();";
 const now = () => new Date().toISOString();
 const result = (system, state, summary, evidence) => ({ system, state, summary, evidence, observedAt: now() });
-
-function probeTcp(host, port) {
-  return new Promise((resolve) => {
-    const socket = net.connect({ host, port });
-    const timer = setTimeout(() => { socket.destroy(); resolve(false); }, 2500);
-    socket.once("connect", () => { clearTimeout(timer); socket.end(); resolve(true); });
-    socket.once("error", () => { clearTimeout(timer); resolve(false); });
-  });
-}
 
 async function probeHttp(url) {
   try {
@@ -39,10 +32,40 @@ async function repositoryStatus() {
 }
 
 async function postgresStatus() {
-  const { postgresqlHost, postgresqlPort } = config.verification;
-  if (!postgresqlHost) return result("PostgreSQL", "blocked", "No host configured; no database probe attempted.", "Set NEXUS_POSTGRES_HOST for a TCP-only reachability check.");
-  const reachable = await probeTcp(postgresqlHost, postgresqlPort);
-  return result("PostgreSQL", reachable ? "verified" : "failed", reachable ? "TCP endpoint accepted a connection; no SQL was executed." : "TCP endpoint could not be reached; no SQL was executed.", `${postgresqlHost}:${postgresqlPort}`);
+  const { postgresqlHost, postgresqlPort, postgresqlDatabase, postgresqlPassword, psqlPath } = config.verification;
+  if (!postgresqlHost) return result("PostgreSQL", "blocked", "B-002 not verified: no database host is configured; no authentication attempted.", "Set NEXUS_POSTGRES_HOST.");
+  if (!postgresqlPassword) return result("PostgreSQL", "blocked", "B-002 not verified: no local database credential is configured; no authentication attempted.", "Set the local NEXUS_POSTGRES_PASSWORD without exposing it to the UI or logs.");
+
+  try {
+    const { stdout } = await execFileAsync(psqlPath, [
+      "-X", "-w", "-A", "-t", "-F", "\t",
+      "-h", postgresqlHost,
+      "-p", String(postgresqlPort),
+      "-d", postgresqlDatabase,
+      "-U", B002_ROLE,
+      "-c", B002_QUERY
+    ], {
+      cwd: repositoryRoot,
+      env: {
+        ...process.env,
+        PGPASSWORD: postgresqlPassword,
+        PGUSER: B002_ROLE,
+        PGDATABASE: postgresqlDatabase,
+        PGHOST: postgresqlHost,
+        PGPORT: String(postgresqlPort)
+      },
+      timeout: 5000,
+      windowsHide: true,
+      maxBuffer: 2000
+    });
+    const [currentUser, currentDatabase] = stdout.trim().split("\t");
+    if (currentUser !== B002_ROLE || !currentDatabase) {
+      return result("PostgreSQL", "failed", "B-002 not verified: authenticated query returned an unexpected identity.", `Expected current_user=${B002_ROLE}; received current_user=${currentUser || "empty"}.`);
+    }
+    return result("PostgreSQL", "verified", `B-002 VERIFIED: authenticated as ${B002_ROLE} and read-only identity query succeeded.`, `current_user=${currentUser}; current_database=${currentDatabase}; query=${B002_QUERY}`);
+  } catch (error) {
+    return result("PostgreSQL", "failed", "B-002 not verified: authenticated read-only query failed.", `Authentication or query failure for role ${B002_ROLE}; no write was attempted.`);
+  }
 }
 
 async function urlStatus(system, url, variable) {
@@ -59,5 +82,5 @@ export async function collectLiveStatus() {
     Promise.resolve(result("Google Drive", "blocked", "No B-001 verification adapter is configured.", "No Drive request, credential, or write was attempted.")),
     urlStatus("Nexus Capital Tracker", config.verification.trackerUrl, "NEXUS_CAPITAL_TRACKER_URL")
   ]);
-  return { generatedAt: now(), contract: "B-001 read-only live-status verification", checks };
+  return { generatedAt: now(), contract: "B-002 authenticated read-only PostgreSQL verification", checks };
 }

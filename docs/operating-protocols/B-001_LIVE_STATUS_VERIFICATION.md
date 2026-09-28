@@ -1,16 +1,17 @@
 # B-001 — Live-Status Verification
 
-Status: AUTHORIZED IMPLEMENTATION
+Status: SUPERSEDED BY B-002 FOR POSTGRESQL
 
 ## Purpose
 
 Provide the Command Tower's first operational read-only answer to: **what is
 actually live, verified, blocked, or failed right now?**
 
-## Boundary
+## Boundary (historical B-001 behavior)
 
-- No SQL or database authentication. PostgreSQL is only probed by TCP when an
-  explicit host is configured.
+- PostgreSQL was only probed by TCP when an explicit host was configured. The
+  current authenticated PostgreSQL contract is documented in
+  [`B-002_AUTHENTICATED_POSTGRES_VERIFICATION.md`](B-002_AUTHENTICATED_POSTGRES_VERIFICATION.md).
 - No writes, automations, workflow execution, credential collection, or secret
   storage.
 - No status is inferred from configuration alone. A configured but unreachable
@@ -23,7 +24,7 @@ actually live, verified, blocked, or failed right now?**
 `GET /api/live-status` returns a no-store JSON evidence packet. The Operations
 Dashboard calls it only when opened or when the operator presses **Verify now**.
 
-## Supported B-001 checks
+## Historical B-001 checks
 
 | System | Proof | State when not configured |
 | --- | --- | --- |

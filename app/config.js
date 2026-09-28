@@ -8,6 +8,9 @@ export const config = Object.freeze({
   verification: Object.freeze({
     postgresqlHost: process.env.NEXUS_POSTGRES_HOST || "",
     postgresqlPort: Number.parseInt(process.env.NEXUS_POSTGRES_PORT || "5432", 10),
+    postgresqlDatabase: process.env.NEXUS_POSTGRES_DATABASE || "postgres",
+    postgresqlPassword: process.env.NEXUS_POSTGRES_PASSWORD || "",
+    psqlPath: process.env.NEXUS_PSQL_PATH || "psql",
     n8nUrl: process.env.NEXUS_N8N_URL || "",
     trackerUrl: process.env.NEXUS_CAPITAL_TRACKER_URL || ""
   })

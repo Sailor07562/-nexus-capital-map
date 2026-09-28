@@ -16,12 +16,13 @@ GitHub does not replace PostgreSQL, Drive, Tracker, Airtable, Docker, n8n, or
 Work Mode. It is the traceability, rollback, consolidation, and collaboration
 layer.
 
-## B-001 Live-Status Verification
+## B-002 Authenticated Live-Status Verification
 
-The B-000 scaffold now has its first authorized operational capability:
-B-001 read-only live-status verification. The Operations Dashboard shows
-evidence-bearing `verified`, `blocked`, and `failed` status. All other pages
-remain placeholders.
+The restored CT surface now has B-002 authenticated read-only PostgreSQL
+verification. The Operations Dashboard shows evidence-bearing `verified`,
+`blocked`, and `failed` status. PostgreSQL is marked verified only after CT
+authenticates as `nexus_command_tower_ro` and executes the identity query
+documented in [`B-002_AUTHENTICATED_POSTGRES_VERIFICATION.md`](docs/operating-protocols/B-002_AUTHENTICATED_POSTGRES_VERIFICATION.md).
 
 ```bash
 npm start
@@ -30,8 +31,9 @@ npm start
 Open http://localhost:8080. For full startup instructions, see
 [`docs/operating-protocols/B-000_STARTUP.md`](docs/operating-protocols/B-000_STARTUP.md).
 
-It contains no SQL, database authentication, credentials, writes, workflow
-execution, telemetry controls, or automation controls. See
+The B-002 check does not perform SQL writes, DDL, migrations, privilege
+changes, workflow execution, broker calls, or automation controls. The earlier
+B-001 TCP-only contract is retained as historical reference in
 [`B-001_LIVE_STATUS_VERIFICATION.md`](docs/operating-protocols/B-001_LIVE_STATUS_VERIFICATION.md).
 
 ## Prior Local Interface Shell

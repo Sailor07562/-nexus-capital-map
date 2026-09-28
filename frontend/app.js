@@ -62,13 +62,13 @@ function renderOverview() {
 }
 
 async function renderLiveStatus() {
-  content.innerHTML = `<article class="verification-card"><div class="verification-heading"><div><p class="eyebrow">Read-only evidence</p><h2>Live Status</h2><p>Runtime probes only. This lane does not execute SQL writes, broker calls, n8n mutations, or credential flows.</p></div><button id="refresh-status" type="button">Verify now</button></div><p class="loading">Collecting status evidence…</p></article>`;
+  content.innerHTML = `<article class="verification-card"><div class="verification-heading"><div><p class="eyebrow">B-002 · authenticated read-only evidence</p><h2>Live Status</h2><p>PostgreSQL is marked verified only after the read-only identity query succeeds as nexus_command_tower_ro. This lane does not execute SQL writes, broker calls, or n8n mutations.</p></div><button id="refresh-status" type="button">Verify now</button></div><p class="loading">Collecting status evidence…</p></article>`;
   try {
     const response = await fetch("/api/live-status", { cache: "no-store" });
     if (!response.ok) throw new Error(`Status endpoint returned ${response.status}`);
     const payload = await response.json();
     const rows = payload.checks.map((check) => `<tr><td>${esc(check.system)}</td><td><span class="state ${esc(check.state)}">${esc(check.state)}</span></td><td>${esc(check.summary)}</td><td>${esc(check.evidence)}</td><td>${esc(new Date(check.observedAt).toLocaleTimeString())}</td></tr>`).join("");
-    content.innerHTML = `<article class="verification-card"><div class="verification-heading"><div><p class="eyebrow">Read-only evidence</p><h2>Live Status</h2><p>Only proven conditions are marked verified. This page observes; it does not operate.</p></div><button id="refresh-status" type="button">Verify now</button></div><p class="evidence-time">Evidence refreshed ${esc(new Date(payload.generatedAt).toLocaleString())}</p><div class="table-wrap"><table><thead><tr><th>System</th><th>State</th><th>Observation</th><th>Evidence</th><th>Observed</th></tr></thead><tbody>${rows}</tbody></table></div></article>`;
+    content.innerHTML = `<article class="verification-card"><div class="verification-heading"><div><p class="eyebrow">B-002 · authenticated read-only evidence</p><h2>Live Status</h2><p>Only proven conditions are marked verified. PostgreSQL requires an authenticated nexus_command_tower_ro identity query; this page observes and does not operate.</p></div><button id="refresh-status" type="button">Verify now</button></div><p class="evidence-time">Evidence refreshed ${esc(new Date(payload.generatedAt).toLocaleString())}</p><div class="table-wrap"><table><thead><tr><th>System</th><th>State</th><th>Observation</th><th>Evidence</th><th>Observed</th></tr></thead><tbody>${rows}</tbody></table></div></article>`;
   } catch (error) {
     content.innerHTML = `<article class="verification-card"><p class="eyebrow">Verification failed</p><h2>Status unavailable</h2><p>${esc(error.message)}</p><button id="refresh-status" type="button">Try again</button></article>`;
   }
