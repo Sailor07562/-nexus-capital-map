@@ -44,3 +44,18 @@ Drive may be a source or destination referenced by an adapter, such as `company-
 ## Change control
 
 Adding, removing, or reclassifying an adapter requires an updated registry entry, a bounded evidence receipt, and review through the normal GitHub workflow. Reclassifying Google Drive as Integration Fabric does not change database schemas, workflows, credentials, trading controls, or execution authority.
+
+## Durable records and mission retrieval
+
+Important findings, mission checkpoints, and capability changes follow the
+[durable additions and retrieval requirement](../docs/governance/REPOSITORY_GOVERNANCE.md#durable-additions-and-retrieval).
+Each applicable adapter must identify its authoritative source record, authorized
+writer or staging handoff, and readback/retrieval evidence. A read-only adapter
+does not gain write authority from this requirement.
+
+Mission/entity retrieval is a required coverage assessment, not a newly active
+adapter. Evaluate existing paths against the linked mission retrieval contract
+before adding a registry entry. Preserve the aggregate-only status boundary;
+detailed evidence retrieval needs a separately authorized read path where that
+boundary cannot support it. No adapter state in this inventory is upgraded by
+this documentation.
