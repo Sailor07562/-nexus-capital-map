@@ -35,3 +35,32 @@ The following priorities govern design and operation:
 These priorities apply to migrations, workflow design, research-lane
 processing, and tracker integrations. Validation, provenance, and review must
 remain possible even when automation is unavailable.
+
+## Doctrine registry
+
+### NDU-20261001-001
+
+| Field | Value |
+|---|---|
+| Update ID | `NDU-20261001-001` |
+| Title | Capability Expansion Governance Doctrine |
+| Date | 2026-10-01 |
+| Type | `FP`, `AUTHORITY`, `GOVERNANCE`, `LESSON` |
+| Status | `ADOPTED` |
+| Source | User-directed governance decision in ChatGPT |
+| Artifact | [NEXUS_CAPABILITY_EXPANSION_GOVERNANCE_DOCTRINE_20261001.md](NEXUS_CAPABILITY_EXPANSION_GOVERNANCE_DOCTRINE_20261001.md) |
+| Summary | Capability expansion triggers governance review before authority expansion. Governance strengthens across Observe → Interpret → Record → Promote → Act. New capability does not imply new authority. |
+| Affects | Nexus governance, agent authority, connectors/plugins, adapters, databases, cloud execution, financial connections, payment capabilities, automation, promotion controls, canonical storage, external actions |
+| Authority Impact | Restrictive control: requires governance review before newly available capability receives expanded authority. Grants no new execution, trading, payment, transfer, capital, canonical-write, or automatic-promotion authority. |
+| Next Action | Apply this doctrine as a required review gate whenever Nexus discovers or receives a materially new capability. |
+| Inheritance Note | Future Nexus and replacement agents/components must treat capability discovery as a governance event and inherit the narrowest existing authority until reviewed. |
+| Supersedes | None |
+| Related Updates | Existing Nexus authority, integration change-control, governance-of-governance, and inheritance doctrines |
+
+Sources: [Drive doctrine](https://drive.google.com/file/d/1D0zBZ0FFArGlsUGBINFfefWJg2j0qiAd/view)
+and [Drive registry addendum](https://drive.google.com/file/d/1NKE7_6Xhd-SSkYmEr8PZ-xjtTva2BKc_/view).
+
+`ADOPTED` records the source doctrine's status. Repository promotion still
+requires the controlled-change review above. Versioning this entry grants no
+new runtime authority and leaves existing trading, transfer, payment, capital,
+canonical-write, and automatic-promotion controls unchanged.
