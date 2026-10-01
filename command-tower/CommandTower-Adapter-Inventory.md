@@ -107,3 +107,35 @@ and receipt; the retrieval interface remains read-only.
 Assessment outcome: documented coverage gap; separate retrieval interface
 recommended, deployed coverage and live GEV recovery unverified. Official adapter
 count and all runtime states remain unchanged.
+
+### Connected cloud readback — 2026-10-01
+
+Read-only connector inspection completed; no database writes or grants attempted.
+
+- Both connected projects, named `nexus_supabase_canonical` and
+  `nexus_supabase_sandbox`, answered catalog queries as database `postgres`,
+  reader `postgres`. Project naming alone does not establish semantic authority.
+- Both returned zero `nexus_mos` schemas and no relations matching
+  `(^|_)mission(s|_|$)` outside system schemas. This narrowly establishes
+  catalog coverage on these two remote databases, not absence of missions
+  on local PostgreSQL or absence of differently named research records.
+- The first project's `nexus.integration_adapter_registry` returned one row:
+  `supabase_sandbox`, `verification_required`, allowed operation
+  `synthetic_health_projection`.
+- The sandbox's `nexus_sandbox.adapter_registry` returned `ADAPTER-001`,
+  class `SYNTHETIC_HEALTH`, state `FOUNDATION_VERIFIED`, read-only,
+  canonical-write and trade authority false.
+- These rows do not establish a deployed mission-retrieval bridge. Their recorded
+  authority text may predate later operating instructions; no authority was
+  changed or inferred from this inspection.
+
+Prior conversation evidence reports MOS-005 applied and verified September 27,
+with closeout receipt `MOS005_SQL_EXECUTION_RECEIPT_20260927.md`. Exact-name
+Drive/Library searches and workspace inspection did not recover that receipt.
+This does not invalidate the reported deployment.
+
+**Remaining dependency:** obtain the local MOS-005 receipt/schema readback and
+an authorized reachable reader or approved projection of that registry. The
+current cloud connections cannot supply the specified MOS-005 mission objects.
+No local role grant, live local view, GEV assessment, or cross-system sync was
+verified in this pass. Do not create a replacement registry to hide this gap.
