@@ -44,3 +44,98 @@ Drive may be a source or destination referenced by an adapter, such as `company-
 ## Change control
 
 Adding, removing, or reclassifying an adapter requires an updated registry entry, a bounded evidence receipt, and review through the normal GitHub workflow. Reclassifying Google Drive as Integration Fabric does not change database schemas, workflows, credentials, trading controls, or execution authority.
+
+## Durable records and mission retrieval
+
+Important findings, mission checkpoints, and capability changes follow the
+[durable additions and retrieval requirement](../docs/governance/REPOSITORY_GOVERNANCE.md#durable-additions-and-retrieval).
+Each applicable adapter must identify its authoritative source record, authorized
+writer or staging handoff, and readback/retrieval evidence. A read-only adapter
+does not gain write authority from this requirement.
+
+Mission/entity retrieval is a required coverage assessment, not a newly active
+adapter. Evaluate existing paths against the linked mission retrieval contract
+before adding a registry entry. Preserve the aggregate-only status boundary;
+detailed evidence retrieval needs a separately authorized read path where that
+boundary cannot support it. No adapter state in this inventory is upgraded by
+this documentation.
+
+### Coverage assessment — 2026-10-01
+
+Scope: repository contracts and checked-in reader at main commit
+`633acf54a46491678c2780770f15e3e85efbfd58`, plus the MOS-005 architecture
+document. This is not a live database or deployed-adapter census.
+
+| Existing path | Evidence | Mission retrieval coverage |
+|---|---|---|
+| Company Evidence Search | [Machine registry](command-tower-adapter-registry.json), research intake sources and Research Radar packet target | Source discovery; no documented canonical mission-ID/entity lookup |
+| Command Tower live status | [Status contract](CommandTower-Status-Payload-Contract.md) and [reader](Invoke-CommandTowerLiveStatusReadOnly.ps1) | Scalar aggregate queries over eight approved views; no mission lookup parameter or detailed finding/evidence response |
+| NCMS Trade Log projection | Machine registry, submission-receipt target-only upsert | Trade receipt projection; not general mission retrieval |
+| Airtable registry / GitHub provenance | Machine registry, metadata and version-history boundaries | Supporting lineage; not canonical PostgreSQL mission retrieval |
+| PostgreSQL authority / n8n / Paper receipts | Machine registry, canonical-store and bounded execution/intake roles | Source or writer dependencies, not a documented consumer mission-retrieval interface |
+
+[MOS-005 Read-First Architecture](https://docs.google.com/document/d/1OZXpBYOxZTSD5qNd-tvZz9mIDL21XjiPdjWrM8-uI4c/edit)
+already designs missions, packets, receipts, verifications, links, and read views.
+The retrieved September 24 document is a draft, not current deployment evidence.
+Later implementation reports must be checked against the execution receipt and
+live schema; do not rerun its draft migration or create a parallel mission store.
+
+**Recommendation:** reuse the existing Mission Registry and add a distinct,
+bounded mission-retrieval interface if deployed coverage is absent. Do not widen
+the aggregate-only status contract or misclassify external research intake as
+canonical mission retrieval. A separate logical adapter can reuse existing
+service infrastructure; it need not be another server.
+
+**Next implementation gate:** inspect the latest MOS-005 execution receipt,
+deployed mission/entity relationships, available approved read views and reader
+grants. Identify the exact source fields for findings, evidence, verification,
+next action and blockers. Then bind the retrieval contract to those actual
+objects using parameterized, bounded reads. Until that inspection, schema names,
+routes, role grants, and a new official registry entry remain unspecified.
+
+**GEV acceptance case:** query by GEV, preserve all linked mission matches, and
+retrieve the reported candidate assessment with its actual evidence and next
+action if present. Do not substitute older watchlist records for the assessment.
+An empty or incomplete result must report source coverage and unresolved state,
+not declare the mission absent. Verify a retrieved mission again by its returned
+ID. Existing completed engine tests do not need to be repeated.
+
+**Persistence dependency:** retrieval cannot repair an addition that was never
+recorded. The existing authorized mission writer must supply the durable record
+and receipt; the retrieval interface remains read-only.
+
+Assessment outcome: documented coverage gap; separate retrieval interface
+recommended, deployed coverage and live GEV recovery unverified. Official adapter
+count and all runtime states remain unchanged.
+
+### Connected cloud readback — 2026-10-01
+
+Read-only connector inspection completed; no database writes or grants attempted.
+
+- Both connected projects, named `nexus_supabase_canonical` and
+  `nexus_supabase_sandbox`, answered catalog queries as database `postgres`,
+  reader `postgres`. Project naming alone does not establish semantic authority.
+- Both returned zero `nexus_mos` schemas and no relations matching
+  `(^|_)mission(s|_|$)` outside system schemas. This narrowly establishes
+  catalog coverage on these two remote databases, not absence of missions
+  on local PostgreSQL or absence of differently named research records.
+- The first project's `nexus.integration_adapter_registry` returned one row:
+  `supabase_sandbox`, `verification_required`, allowed operation
+  `synthetic_health_projection`.
+- The sandbox's `nexus_sandbox.adapter_registry` returned `ADAPTER-001`,
+  class `SYNTHETIC_HEALTH`, state `FOUNDATION_VERIFIED`, read-only,
+  canonical-write and trade authority false.
+- These rows do not establish a deployed mission-retrieval bridge. Their recorded
+  authority text may predate later operating instructions; no authority was
+  changed or inferred from this inspection.
+
+Prior conversation evidence reports MOS-005 applied and verified September 27,
+with closeout receipt `MOS005_SQL_EXECUTION_RECEIPT_20260927.md`. Exact-name
+Drive/Library searches and workspace inspection did not recover that receipt.
+This does not invalidate the reported deployment.
+
+**Remaining dependency:** obtain the local MOS-005 receipt/schema readback and
+an authorized reachable reader or approved projection of that registry. The
+current cloud connections cannot supply the specified MOS-005 mission objects.
+No local role grant, live local view, GEV assessment, or cross-system sync was
+verified in this pass. Do not create a replacement registry to hide this gap.
