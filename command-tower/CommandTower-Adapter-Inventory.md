@@ -59,3 +59,51 @@ before adding a registry entry. Preserve the aggregate-only status boundary;
 detailed evidence retrieval needs a separately authorized read path where that
 boundary cannot support it. No adapter state in this inventory is upgraded by
 this documentation.
+
+### Coverage assessment — 2026-10-01
+
+Scope: repository contracts and checked-in reader at main commit
+`633acf54a46491678c2780770f15e3e85efbfd58`, plus the MOS-005 architecture
+document. This is not a live database or deployed-adapter census.
+
+| Existing path | Evidence | Mission retrieval coverage |
+|---|---|---|
+| Company Evidence Search | [Machine registry](command-tower-adapter-registry.json), research intake sources and Research Radar packet target | Source discovery; no documented canonical mission-ID/entity lookup |
+| Command Tower live status | [Status contract](CommandTower-Status-Payload-Contract.md) and [reader](Invoke-CommandTowerLiveStatusReadOnly.ps1) | Scalar aggregate queries over eight approved views; no mission lookup parameter or detailed finding/evidence response |
+| NCMS Trade Log projection | Machine registry, submission-receipt target-only upsert | Trade receipt projection; not general mission retrieval |
+| Airtable registry / GitHub provenance | Machine registry, metadata and version-history boundaries | Supporting lineage; not canonical PostgreSQL mission retrieval |
+| PostgreSQL authority / n8n / Paper receipts | Machine registry, canonical-store and bounded execution/intake roles | Source or writer dependencies, not a documented consumer mission-retrieval interface |
+
+[MOS-005 Read-First Architecture](https://docs.google.com/document/d/1OZXpBYOxZTSD5qNd-tvZz9mIDL21XjiPdjWrM8-uI4c/edit)
+already designs missions, packets, receipts, verifications, links, and read views.
+The retrieved September 24 document is a draft, not current deployment evidence.
+Later implementation reports must be checked against the execution receipt and
+live schema; do not rerun its draft migration or create a parallel mission store.
+
+**Recommendation:** reuse the existing Mission Registry and add a distinct,
+bounded mission-retrieval interface if deployed coverage is absent. Do not widen
+the aggregate-only status contract or misclassify external research intake as
+canonical mission retrieval. A separate logical adapter can reuse existing
+service infrastructure; it need not be another server.
+
+**Next implementation gate:** inspect the latest MOS-005 execution receipt,
+deployed mission/entity relationships, available approved read views and reader
+grants. Identify the exact source fields for findings, evidence, verification,
+next action and blockers. Then bind the retrieval contract to those actual
+objects using parameterized, bounded reads. Until that inspection, schema names,
+routes, role grants, and a new official registry entry remain unspecified.
+
+**GEV acceptance case:** query by GEV, preserve all linked mission matches, and
+retrieve the reported candidate assessment with its actual evidence and next
+action if present. Do not substitute older watchlist records for the assessment.
+An empty or incomplete result must report source coverage and unresolved state,
+not declare the mission absent. Verify a retrieved mission again by its returned
+ID. Existing completed engine tests do not need to be repeated.
+
+**Persistence dependency:** retrieval cannot repair an addition that was never
+recorded. The existing authorized mission writer must supply the durable record
+and receipt; the retrieval interface remains read-only.
+
+Assessment outcome: documented coverage gap; separate retrieval interface
+recommended, deployed coverage and live GEV recovery unverified. Official adapter
+count and all runtime states remain unchanged.
