@@ -26,3 +26,11 @@ never committed; safe examples and templates must contain no real values.
 
 See [`docs/governance/REPOSITORY_GOVERNANCE.md`](docs/governance/REPOSITORY_GOVERNANCE.md)
 for the governing principles and promotion rules.
+
+## Stock-review starting point
+
+Before preparing or updating a Nexus stock review, use the
+[Investment Analysis Doctrine and reusable review checklist](docs/governance/NEXUS_INVESTMENT_ANALYSIS_DOCTRINE_20261001.md)
+(`NDU-20261001-002`). Complete its company-specific evidence record and state
+material gaps before finalizing the conclusion. This is a documented research
+standard; runtime enforcement and trading authority are separate.
