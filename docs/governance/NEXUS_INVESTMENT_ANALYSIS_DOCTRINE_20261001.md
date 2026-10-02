@@ -98,6 +98,15 @@ automation, or runtime deployment.
 
 ## Registry and inheritance
 
+### Executable review entrypoint
+
+The [stock-review gate](../../reviews/stock/README.md) implements this standard
+for file-based review packets. Start with `scripts/stock_review_gate.py begin`;
+the command loads this doctrine automatically. Completion validates required
+evidence and binds the output to this document's hash. GitHub Actions rechecks
+repository review packets. Source truth still requires analyst review, and
+live PostgreSQL/n8n completion enforcement is not established by this adapter.
+
 Registered in [Repository Governance](REPOSITORY_GOVERNANCE.md).
 Future stock-review templates and Nexus agents performing stock analysis
 should inherit this standard and link the completed evidence record. This
