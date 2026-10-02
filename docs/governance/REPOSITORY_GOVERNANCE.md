@@ -64,3 +64,22 @@ and [Drive registry addendum](https://drive.google.com/file/d/1NKE7_6Xhd-SSkYmEr
 requires the controlled-change review above. Versioning this entry grants no
 new runtime authority and leaves existing trading, transfer, payment, capital,
 canonical-write, and automatic-promotion controls unchanged.
+
+### NDU-20261001-002
+
+| Field | Value |
+|---|---|
+| Update ID | `NDU-20261001-002` |
+| Title | Investment Analysis Doctrine — Stock Review Standard |
+| Date | 2026-10-01 |
+| Type | `RESEARCH`, `GOVERNANCE`, `WORKFLOW` |
+| Status | `ADOPTED` — user-directed research standard |
+| Source | User-directed stock-analysis framework discussion and instruction to add it to Nexus |
+| Artifact | [NEXUS_INVESTMENT_ANALYSIS_DOCTRINE_20261001.md](NEXUS_INVESTMENT_ANALYSIS_DOCTRINE_20261001.md) |
+| Summary | Every stock review uses company-specific financial evidence, multiquarter trends, primary sources, cash generation, financial strength, per-share outcomes, and valuation. Backlog, book-to-bill, and data-center demand apply where relevant. |
+| Affects | Individual-stock research, thesis reviews, review templates, and documented stock-review workflow |
+| Authority Impact | Research-documentation requirement only; preserves PostgreSQL operational authority and all existing trading, broker, capital, and promotion controls. |
+| Next Action | Open the doctrine at the start of a stock review and complete its evidence record and reusable checklist before finalizing the conclusion. |
+| Inheritance Note | Future Nexus stock-review templates and agents should inherit this standard. Runtime loading/enforcement requires separate implementation and verification. |
+| Supersedes | None |
+| Related Updates | `NDU-20261001-001`; existing source-verification and investment-review controls |
