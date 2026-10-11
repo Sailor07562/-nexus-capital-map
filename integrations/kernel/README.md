@@ -51,6 +51,11 @@ under the existing protocol, not permission to overwrite history.
 
 ## What remains outside this build
 
+The separately scoped [private sandbox reader](sandbox/README.md) observes
+existing cloud controls through a restricted database role. It does not call
+this Python gate or satisfy authenticated packet/context integration, and it
+does not lift any production-wiring or federation HOLD.
+
 - Authenticated cloud hosting and wiring of the real completion/write boundaries.
 - Existing Mission Registry / lane / event-family schema bindings and writer ownership.
 - Atomic persistence, outbox delivery, real concurrency and restart recovery.
