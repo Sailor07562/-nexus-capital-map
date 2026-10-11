@@ -56,6 +56,13 @@ conflict or linked correction, not permission to overwrite history. V1 candidate
 digests are not accepted as a fallback; re-read trusted original evidence and
 review under v2 before use. No live consumer or database state is migrated here.
 
+## Read-only research receipt adapter
+
+The [read-only research receipt adapter](RESEARCH_RECEIPT_ADAPTER.md) checks an
+explicit receipt-to-original-packet binding and preserves the original packet.
+It reuses this gate; it does not create missing identity or authenticate a JSON
+snapshot. Its runtime status remains HOLD, even on a structural pass.
+
 ## What remains outside this build
 
 The separately scoped [private sandbox reader](sandbox/README.md) observes
