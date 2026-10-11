@@ -76,6 +76,15 @@ environment remains HOLD, never silently relabelled as sandbox.
 
 CLI exit 0 means structural consistency only; exit 1 means HOLD. Output contains
 diagnostics and fingerprints, not supplied business payloads or private paths.
+The nested `gate_result` is a bounded projection, not the raw validator report:
+known status fields and error codes are retained, while every error detail is
+replaced with a fixed message. Unknown codes become `GATE_DIAGNOSTIC`; extra
+fields and nested diagnostic objects are omitted rather than stringified.
+Malformed or contradictory gate reports fail closed. This includes policy-file
+and stock-validator exception paths, which can otherwise contain private paths,
+URLs or supplied text. The existing kernel and stock validators are unchanged;
+their direct CLI output is outside this adapter's reporting boundary.
+
 The API does not mutate inputs; the CLI does not write files. Private receipts,
 runtime snapshots and reviewer identities must stay outside the public source
 repository. Tests contain synthetic evidence only. No extra dependency,

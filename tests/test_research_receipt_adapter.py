@@ -1,6 +1,7 @@
 """Synthetic adapter tests. No real research, credentials or source truth."""
 import ast
 import copy
+import io
 import json
 import subprocess
 import sys
@@ -312,6 +313,134 @@ class ResearchReceiptAdapterTests(unittest.TestCase):
         self.assertIsNone(candidate)
         self.assertEqual(result['verdict'], 'HOLD')
         self.assertEqual(result['gate_result']['errors'][0]['code'], 'POLICY_OR_PAYLOAD')
+        self.assertNotIn(str(folder), json.dumps(result))
+
+    def test_nested_policy_exceptions_do_not_expose_private_text(self):
+        values = inputs()
+        private = '/private/SYNTHETIC-PATH https://example.invalid/?token=SYNTHETIC-TOKEN'
+        for exception in (OSError, ValueError, TypeError):
+            with self.subTest(exception=exception.__name__):
+                with patch.object(gate, 'binding', side_effect=exception(private)):
+                    result = self.held(*values, code='POLICY_OR_PAYLOAD')
+                self.assertNotIn(private, json.dumps(result))
+                self.assertNotIn('SYNTHETIC-', json.dumps(result))
+
+    def test_nested_stock_exceptions_do_not_expose_private_text(self):
+        values = inputs()
+        private = 'C:\\private\\SYNTHETIC-PATH https://example.invalid/SYNTHETIC-TOKEN'
+        for exception in (OSError, ValueError, TypeError, AttributeError):
+            with self.subTest(exception=exception.__name__):
+                with patch.object(stock, 'validate', side_effect=exception(private)):
+                    result = self.held(*values, code='STOCK_REVIEW')
+                self.assertNotIn('SYNTHETIC-', json.dumps(result))
+
+    def test_nested_stock_messages_are_not_copied_even_as_objects(self):
+        values = inputs()
+        messages = ['SYNTHETIC-BUSINESS-TEXT', {'nested': ['SYNTHETIC-PRIVATE-URL']}]
+        with patch.object(stock, 'validate', return_value=messages):
+            result = self.held(*values, code='STOCK_REVIEW')
+        self.assertEqual(len(result['gate_result']['errors']), 2)
+        self.assertNotIn('SYNTHETIC-', json.dumps(result))
+
+    def test_projection_drops_unknown_fields_and_untrusted_error_codes(self):
+        values = inputs()
+        checked = gate.evaluate(values[1], values[2], now=NOW)
+        checked['verdict'] = 'HOLD'
+        checked['SYNTHETIC-SECRET-KEY'] = {'value': 'SYNTHETIC-SECRET-VALUE'}
+        checked['errors'] = [
+            {'code': 'POLICY_OR_PAYLOAD', 'detail': {'nested': 'SYNTHETIC-DETAIL'},
+             'traceback': 'SYNTHETIC-TRACEBACK'},
+            {'code': 'SYNTHETIC_SECRET_CODE', 'detail': 'SYNTHETIC-DETAIL'},
+            {'code': {'unexpected': 'SYNTHETIC-SECRET'}},
+            'SYNTHETIC-INVALID-ISSUE',
+        ]
+        before = copy.deepcopy(checked)
+        with patch.object(gate, 'evaluate', return_value=checked):
+            result = self.held(*values, code='POLICY_OR_PAYLOAD')
+        self.assertEqual(checked, before)
+        self.assertNotIn('SYNTHETIC', json.dumps(result))
+        self.assertEqual([issue['code'] for issue in result['gate_result']['errors']],
+                         ['POLICY_OR_PAYLOAD'] + ['GATE_DIAGNOSTIC'] * 3)
+        self.assertEqual(set(result['gate_result']),
+                         {'protocol', 'phase', 'verdict', 'execution_authorized',
+                          'production_verified', 'canonical_state_changed', 'errors'})
+
+    def test_malformed_or_contradictory_gate_reports_fail_closed(self):
+        values = inputs()
+        valid = gate.evaluate(values[1], values[2], now=NOW)
+        changes = [('protocol', 'SYNTHETIC-SECRET'), ('phase', 'SYNTHETIC-SECRET'),
+                   ('verdict', 'SYNTHETIC-SECRET'), ('errors', 'SYNTHETIC-SECRET'),
+                   ('errors', [{'code': 'STOCK_REVIEW', 'detail': 'SYNTHETIC-SECRET'}]),
+                   ('verdict', 'HOLD'), ('execution_authorized', True),
+                   ('production_verified', True), ('canonical_state_changed', True)]
+        malformed = [None, [], 'SYNTHETIC-SECRET', {},
+                     *[dict(valid, **{key: value}) for key, value in changes]]
+        for checked in malformed:
+            with self.subTest(checked=checked):
+                with patch.object(gate, 'evaluate', return_value=checked):
+                    result = self.held(*values, code='GATE_INPUT')
+                self.assertIsNone(result['gate_result'])
+                self.assertNotIn('SYNTHETIC-', json.dumps(result))
+
+    def test_privacy_projection_preserves_gate_decisions_and_code_order(self):
+        for mutate in (lambda packet, context: None,
+                       lambda packet, context: context.pop('idempotency_readback'),
+                       lambda packet, context: context.update(allowed_profiles=[]),
+                       lambda packet, context: packet.update(environment='live')):
+            observation, packet, context = inputs()
+            mutate(packet, context)
+            context['receipt_binding']['packet_sha256'] = gate.subject_digest(packet)
+            original = gate.evaluate(packet, context, now=NOW)
+            before = copy.deepcopy((observation, packet, context))
+            candidate, result = self.check(observation, packet, context)
+            self.assertEqual(result['verdict'], original['verdict'])
+            self.assertEqual(result['gate_result']['verdict'], original['verdict'])
+            self.assertEqual([issue['code'] for issue in result['gate_result']['errors']],
+                             [issue['code'] for issue in original['errors']])
+            self.assertEqual((observation, packet, context), before)
+            if original['verdict'] == 'HOLD':
+                self.assertIsNone(candidate)
+            else:
+                self.assertEqual(candidate, packet)
+
+    def test_diagnostic_code_allowlist_covers_current_gate(self):
+        tree = ast.parse((ROOT / 'scripts/kernel_integration_gate.py').read_text())
+        codes = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                if node.func.id == 'need' and len(node.args) >= 2:
+                    self.assertIsInstance(node.args[1], ast.Constant)
+                    codes.add(node.args[1].value)
+            if isinstance(node, ast.Dict):
+                for key, value in zip(node.keys, node.values):
+                    if isinstance(key, ast.Constant) and key.value == 'code':
+                        if isinstance(value, ast.Constant):
+                            codes.add(value.value)
+                        else:
+                            self.assertIsInstance(value, ast.Name)
+                            self.assertEqual(value.id, 'code')
+        self.assertTrue(codes <= adapter.GATE_DIAGNOSTIC_CODES,
+                        codes - adapter.GATE_DIAGNOSTIC_CODES)
+
+    def test_cli_nested_failures_are_private_on_stdout_and_stderr(self):
+        values = inputs()
+        before = copy.deepcopy(values)
+        private = '/private/SYNTHETIC-PATH https://example.invalid/?key=SYNTHETIC-TOKEN'
+        for target, method, code in ((gate, 'binding', 'POLICY_OR_PAYLOAD'),
+                                     (stock, 'validate', 'STOCK_REVIEW')):
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with patch.object(stock, 'read_json', side_effect=values), \
+                    patch.object(target, method, side_effect=OSError(private)), \
+                    patch.object(sys, 'stdout', stdout), patch.object(sys, 'stderr', stderr):
+                status = adapter.main(['observation.json', '--packet', 'packet.json',
+                                       '--context', 'context.json'])
+            self.assertEqual(status, 1)
+            report = json.loads(stdout.getvalue())
+            self.assertEqual(report['verdict'], 'HOLD')
+            self.assertIn(code, [issue['code'] for issue in report['gate_result']['errors']])
+            self.assertNotIn('SYNTHETIC-', stdout.getvalue() + stderr.getvalue())
+            self.assertEqual(stderr.getvalue(), '')
+            self.assertEqual(values, before)
 
     def test_existing_gate_is_called_and_its_hold_obeyed(self):
         observation, packet, context = inputs()

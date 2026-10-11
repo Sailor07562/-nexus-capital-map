@@ -17,6 +17,51 @@ import stock_review_gate as stock
 
 PROTOCOL = 'NEXUS-RESEARCH-RECEIPT-ADAPTER-v1'
 OBSERVATION_KIND = 'DOCUMENTARY_RECEIPT_READBACK_NOT_RUNTIME_ENVELOPE'
+# Output vocabulary only, not a second validator or authority policy. Unknown
+# future codes receive a fixed fallback; never echo caller/exception text.
+GATE_DIAGNOSTIC_CODES = frozenset({
+    'ACTOR', 'AUTHORITY', 'CANONICAL_AUTHORITY', 'CANONICAL_IDENTITY',
+    'CANONICAL_LOCATOR', 'CANONICAL_PAYLOAD', 'CLASSIFICATION', 'CONTRACT',
+    'DECODER_HOLD', 'DUPLICATE_REUSE_ONLY', 'EFFECT', 'ENVIRONMENT', 'ERROR_HOLD',
+    'EVIDENCE', 'FINANCIAL_IDENTITY', 'FINANCIAL_RECONCILIATION',
+    'FRESHNESS_POLICY', 'FUTURE', 'IDEMPOTENCY_AUTHORITY', 'IDEMPOTENCY_CONFLICT',
+    'IDEMPOTENCY_LOCATOR', 'IDEMPOTENCY_UNKNOWN', 'IDENTITY', 'INDEPENDENCE',
+    'INPUT', 'LINEAGE', 'LIVE_BINDING_REQUIRED', 'MIRROR', 'MIRROR_IDENTITY',
+    'MIRROR_PAYLOAD', 'MIRROR_RECEIPT', 'MIRROR_SET', 'MIRROR_VERSION',
+    'OPEN_EXCEPTION', 'OPERATION', 'OUTCOME_LINK', 'PHASE', 'POLICY_DRIFT',
+    'POLICY_OR_PAYLOAD', 'PROFILE', 'RECONCILIATION_HOLD', 'REPLAY_PROOF_REQUIRED',
+    'REVIEW', 'REVIEW_BINDING', 'REVIEW_HOLD', 'REVISION', 'ROUTE', 'SCHEMA',
+    'SHAPE', 'STALE', 'STATE', 'STATE_HOLD', 'STOCK_REVIEW', 'SUBMISSION_HOLD',
+    'TIMESTAMP', 'TIME_ORDER', 'VERIFICATION',
+})
+
+
+def private_gate_report(checked):
+    """Project known status fields and codes without copying raw diagnostics.
+
+    Details, nested objects, extra keys and exception strings are never traversed
+    or stringified. Invalid report shapes fail closed at the existing boundary.
+    The original gate result and every supplied input remain untouched.
+    """
+    flags = ('execution_authorized', 'production_verified', 'canonical_state_changed')
+    if not (isinstance(checked, dict)
+            and checked.get('protocol') == gate.PROTOCOL
+            and checked.get('phase') == 'preflight'
+            and checked.get('verdict') in ('HOLD', 'STRUCTURE_PASS')
+            and all(checked.get(key) is False for key in flags)
+            and isinstance(checked.get('errors'), list)
+            and bool(checked['errors']) == (checked['verdict'] == 'HOLD')):
+        raise ValueError('Invalid existing-gate diagnostic shape')
+    result = {key: checked[key] for key in ('protocol', 'phase', 'verdict', *flags)}
+    result['errors'] = []
+    for issue in checked['errors']:
+        code = issue.get('code') if isinstance(issue, dict) else None
+        safe_code = code if isinstance(code, str) and code in GATE_DIAGNOSTIC_CODES else 'GATE_DIAGNOSTIC'
+        result['errors'].append({
+            'code': safe_code,
+            'detail': 'Existing gate check failed; raw diagnostic details withheld.',
+        })
+    return result
 
 
 def adapt(observation, packet=None, context=None, *, now=None, root=gate.ROOT):
@@ -96,7 +141,7 @@ def adapt(observation, packet=None, context=None, *, now=None, root=gate.ROOT):
     # missing duplicate/exception readbacks before calling it.
     try:
         checked = gate.evaluate(packet, context, 'preflight', now=clock, root=root)
-        report['gate_result'] = checked
+        report['gate_result'] = private_gate_report(checked)
     except (OSError, ValueError, TypeError, AttributeError, KeyError, RecursionError):
         need(False, 'GATE_INPUT', 'Existing validator rejected the supplied snapshot shape')
         return None, report
