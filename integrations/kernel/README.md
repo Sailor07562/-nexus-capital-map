@@ -63,6 +63,15 @@ explicit receipt-to-original-packet binding and preserves the original packet.
 It reuses this gate; it does not create missing identity or authenticate a JSON
 snapshot. Its runtime status remains HOLD, even on a structural pass.
 
+## Read-only live readiness diagnostics
+
+The [engine readiness projection](ENGINE_READINESS.md) prioritizes CT live-path
+diagnostics: portfolio visibility, symbol eligibility, authentication, exact
+confirmation controls and receipt reconciliation. It checks supplied source
+times and separate requirements without fetching data or granting authority.
+Paper is a separate optional scope and cannot determine live readiness.
+All reports retain `HOLD_UNAUTHENTICATED`; no endpoint or gate binding is added.
+
 ## What remains outside this build
 
 The separately scoped [private sandbox reader](sandbox/README.md) observes
