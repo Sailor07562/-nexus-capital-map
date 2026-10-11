@@ -39,3 +39,12 @@ Start file-based reviews with the [executable stock-review gate](reviews/stock/R
 It automatically loads the doctrine and blocks completion when required evidence
 is missing. The repository workflow checks review packets on pull requests and
 main pushes; merge blocking requires the named check in branch protection.
+
+## Existing-kernel integration checks
+
+The [kernel integration gate](integrations/kernel/README.md) extends the existing
+validation boundary across intake, research, receipt ingestion, projections,
+exceptions, reconciliation and decision/outcome linkage. It is a tested,
+validation-only candidate, not a deployed orchestrator or a second registry.
+Its coverage checklist keeps live bindings and promotion requirements explicit;
+passing local tests does not imply production enforcement or trading authority.
