@@ -39,15 +39,22 @@ The final state change must use the runtime's atomic revision and idempotency
 guard. This package does not supply that database transaction or replace it.
 
 The approved upstream idempotency key is passed through; no new production key
-formula is established. The candidate intent checksum excludes lifecycle and
-revision so progress cannot create a second source event. The full-packet hash
-binds review and canonical readback to the current check. These are consistency
-checks, never cryptographic attestations of identity or source truth.
+formula is established. Candidate check **v2** commits original occurrence and
+acceptance times, contract identity and unknown lifecycle fields in its intent
+checksum. Only explicitly listed progress fields and the expected revision are
+excluded; see [the replay boundary](BOUNDARY.md#original-event-and-replay-proof-candidate-check-v2).
+The full-packet hash binds review and canonical readback to the current check.
+These are consistency checks, never cryptographic attestations of source truth.
 
 A repeated preflight returns HOLD with `DUPLICATE_REUSE_ONLY`; fetch the original
-receipt rather than execute again. Closure can validate a replay against that
-same immutable intent. Changed source content is a conflict or a linked correction
-under the existing protocol, not permission to overwrite history.
+receipt rather than execute again. `REPLAYED` requires a non-null original-event
+readback with matching identity and immutable intent, canonical locator/version,
+approved authority, fresh read timestamp and evidence. Closure binds that original
+to the same current canonical record. A null original lookup is valid only for
+non-replayed work; a missing lookup is unknown. Changed source content is a
+conflict or linked correction, not permission to overwrite history. V1 candidate
+digests are not accepted as a fallback; re-read trusted original evidence and
+review under v2 before use. No live consumer or database state is migrated here.
 
 ## What remains outside this build
 

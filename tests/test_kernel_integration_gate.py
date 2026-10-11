@@ -30,6 +30,18 @@ def bind_readbacks(packet, context):
     context['canonical_readback']['packet_sha256'] = checksum
 
 
+def bind_original(packet, context):
+    """Synthetic original-event readback, never an authenticated runtime proof."""
+    canonical = context['canonical_readback']
+    context['idempotency_readback'] = {
+        'event_id': packet['identity']['event_id'],
+        'idempotency_key': packet['identity']['idempotency_key'],
+        'intent_sha256': gate.intent_digest(packet),
+        'record_ref': canonical['record_ref'], 'version': canonical['version'],
+        'authority_ref': canonical['authority_ref'],
+        'read_at': time(-15), 'evidence_refs': ['test:original-readback']}
+
+
 def fixture(profile='dot_intake'):
     identity = {'event_id': '00000000-0000-4000-8000-000000000001',
                 'correlation_id': '00000000-0000-4000-8000-000000000002',
@@ -101,6 +113,8 @@ class KernelIntegrationTests(unittest.TestCase):
             self.assertIn(code, [x['code'] for x in result['errors']], result)
 
     def test_all_eight_profiles_close_only_structurally(self):
+        self.assertEqual(gate.PROTOCOL, 'NEXUS-KERNEL-INTEGRATION-CHECK-v2')
+        self.assertEqual(gate.CONTRACT, 'NEXUS-INTEGRATION-CONTRACT-v1')
         self.assertEqual(len(gate.PROFILES), 8)
         for profile in gate.PROFILES:
             with self.subTest(profile=profile):
@@ -221,17 +235,14 @@ class KernelIntegrationTests(unittest.TestCase):
 
     def test_duplicate_preflight_never_allows_second_execution(self):
         packet, context = fixture()
-        context['idempotency_readback'] = {'event_id': packet['identity']['event_id'],
-                                         'idempotency_key': packet['identity']['idempotency_key'],
-                                         'intent_sha256': gate.intent_digest(packet)}
+        bind_original(packet, context)
         self.held(packet, context, 'DUPLICATE_REUSE_ONLY', 'preflight')
         self.assertEqual(self.check(packet, context)['verdict'], 'STRUCTURE_PASS')
 
     def test_conflicting_replay_holds(self):
         packet, context = fixture()
-        context['idempotency_readback'] = {'event_id': packet['identity']['event_id'],
-                                         'idempotency_key': packet['identity']['idempotency_key'],
-                                         'intent_sha256': 'b' * 64}
+        bind_original(packet, context)
+        context['idempotency_readback']['intent_sha256'] = 'b' * 64
         self.held(packet, context, 'IDEMPOTENCY_CONFLICT')
 
     def test_replay_identity_survives_lifecycle_and_revision_updates(self):
@@ -239,13 +250,140 @@ class KernelIntegrationTests(unittest.TestCase):
         original = copy.deepcopy(packet)
         original['lifecycle']['processing_status'] = 'RECEIVED'
         original['expected_revision'] = 0
-        context['idempotency_readback'] = {'event_id': packet['identity']['event_id'],
-                                         'idempotency_key': packet['identity']['idempotency_key'],
-                                         'intent_sha256': gate.intent_digest(original)}
+        bind_original(original, context)
         self.assertEqual(self.check(packet, context)['verdict'], 'STRUCTURE_PASS')
         packet['evidence_refs'] = ['test:changed-immutable-evidence']
         bind_readbacks(packet, context)
         self.held(packet, context, 'IDEMPOTENCY_CONFLICT')
+
+    def test_changed_original_timestamp_conflicts_for_every_profile(self):
+        for profile in gate.PROFILES:
+            for phase in ('preflight', 'closure'):
+                packet, context = fixture(profile)
+                bind_original(packet, context)
+                packet['lifecycle']['occurred_at'] = time(-100)
+                bind_readbacks(packet, context)
+                with self.subTest(profile=profile, phase=phase):
+                    self.held(packet, context, 'IDEMPOTENCY_CONFLICT', phase)
+
+    def test_source_times_contract_and_unknown_lifecycle_fields_are_hashed(self):
+        packet, _ = fixture()
+        before = gate.intent_digest(packet)
+        for field, value in (('occurred_at', time(-100)), ('received_at', time(-85)),
+                             ('contract_version', 'different-contract'),
+                             ('unknown_source_field', 'not-mutable-by-default')):
+            changed = copy.deepcopy(packet)
+            changed['lifecycle'][field] = value
+            with self.subTest(field=field):
+                self.assertNotEqual(gate.intent_digest(changed), before)
+        self.assertEqual(gate.intent_digest(packet), before)
+
+    def test_only_explicit_progress_fields_and_revision_are_mutable_in_digest(self):
+        packet, _ = fixture()
+        before = gate.intent_digest(packet)
+        for field, value in (('processing_status', 'REPLAYED'), ('review_status', 'PENDING'),
+                             ('reconciliation_status', 'PENDING'), ('error_status', 'TRANSIENT'),
+                             ('verification_state', 'UNVERIFIED'), ('processed_at', time(-50))):
+            changed = copy.deepcopy(packet)
+            changed['lifecycle'][field] = value
+            with self.subTest(field=field):
+                self.assertEqual(gate.intent_digest(changed), before)
+                self.assertNotEqual(gate.subject_digest(changed), gate.subject_digest(packet))
+        changed = copy.deepcopy(packet)
+        changed['expected_revision'] += 1
+        self.assertEqual(gate.intent_digest(changed), before)
+
+    def test_legacy_lifecycle_omitting_digest_is_not_accepted(self):
+        packet, context = fixture()
+        bind_original(packet, context)
+        context['idempotency_readback']['intent_sha256'] = stock.digest({
+            key: value for key, value in packet.items()
+            if key not in ('lifecycle', 'expected_revision')})
+        self.held(packet, context, 'IDEMPOTENCY_CONFLICT')
+
+    def test_replayed_requires_original_readback_for_every_profile_and_phase(self):
+        for profile in gate.PROFILES:
+            for phase in ('preflight', 'closure'):
+                packet, context = fixture(profile)
+                packet['lifecycle']['processing_status'] = 'REPLAYED'
+                bind_readbacks(packet, context)
+                with self.subTest(profile=profile, phase=phase):
+                    self.held(packet, context, 'REPLAY_PROOF_REQUIRED', phase)
+
+    def test_replayed_with_missing_or_malformed_original_readback_holds(self):
+        for value in (None, {}, [], False, 1, 'claimed-proof'):
+            packet, context = fixture()
+            packet['lifecycle']['processing_status'] = 'REPLAYED'
+            context['idempotency_readback'] = value
+            bind_readbacks(packet, context)
+            with self.subTest(value=value):
+                self.held(packet, context)
+        del context['idempotency_readback']
+        self.held(packet, context, 'IDEMPOTENCY_UNKNOWN')
+
+    def test_replayed_original_proof_permits_only_structural_closure(self):
+        for profile in gate.PROFILES:
+            packet, context = fixture(profile)
+            bind_original(packet, context)
+            packet['lifecycle']['processing_status'] = 'REPLAYED'
+            packet['lifecycle']['processed_at'] = time(-50)
+            packet['expected_revision'] = context['current_revision'] = 2
+            context['canonical_readback']['version'] = '2'
+            for mirror in context['mirror_readbacks']:
+                mirror['canonical_version'] = '2'
+            bind_readbacks(packet, context)
+            with self.subTest(profile=profile):
+                before = copy.deepcopy((packet, context))
+                result = self.check(packet, context)
+                self.assertEqual(result['verdict'], 'STRUCTURE_PASS', result)
+                for key in ('execution_authorized', 'production_verified', 'canonical_state_changed'):
+                    self.assertIs(result[key], False)
+                self.assertEqual((packet, context), before)
+                self.held(packet, context, 'DUPLICATE_REUSE_ONLY', 'preflight')
+
+    def test_original_readback_identity_and_digest_must_match(self):
+        for field, value in (('event_id', '00000000-0000-4000-8000-000000000099'),
+                             ('idempotency_key', 'different-key'), ('intent_sha256', 'b' * 64)):
+            packet, context = fixture()
+            bind_original(packet, context)
+            context['idempotency_readback'][field] = value
+            self.held(packet, context, 'IDEMPOTENCY_CONFLICT')
+
+    def test_original_readback_requires_locator_version_and_authority(self):
+        for field, value, code in (('record_ref', None, 'IDEMPOTENCY_LOCATOR'),
+                                   ('version', None, 'IDEMPOTENCY_LOCATOR'),
+                                   ('authority_ref', None, 'IDEMPOTENCY_AUTHORITY'),
+                                   ('authority_ref', 'other-authority', 'IDEMPOTENCY_AUTHORITY')):
+            packet, context = fixture()
+            bind_original(packet, context)
+            context['idempotency_readback'][field] = value
+            with self.subTest(field=field, value=value):
+                self.held(packet, context, code)
+
+    def test_original_readback_requires_fresh_timestamp_and_evidence(self):
+        for field, value, code in (('read_at', time(-301), 'STALE'),
+                                   ('read_at', time(1), 'FUTURE'),
+                                   ('read_at', None, 'TIMESTAMP'),
+                                   ('evidence_refs', [], 'EVIDENCE')):
+            packet, context = fixture()
+            bind_original(packet, context)
+            context['idempotency_readback'][field] = value
+            with self.subTest(field=field, value=value):
+                self.held(packet, context, code)
+
+    def test_original_and_current_canonical_record_must_match(self):
+        packet, context = fixture()
+        bind_original(packet, context)
+        context['idempotency_readback']['record_ref'] = 'test:other-canonical'
+        self.held(packet, context, 'IDEMPOTENCY_LOCATOR')
+
+    def test_replayed_proof_never_lifts_live_hold(self):
+        packet, context = fixture()
+        packet['lifecycle']['processing_status'] = 'REPLAYED'
+        packet['environment'] = context['environment'] = 'live'
+        bind_original(packet, context)
+        bind_readbacks(packet, context)
+        self.held(packet, context, 'LIVE_BINDING_REQUIRED')
 
     def test_failed_rejected_conflicted_states_cannot_advance(self):
         for field, value in (('error_status', 'AUTHORITY'), ('processing_status', 'DEAD_LETTER'),

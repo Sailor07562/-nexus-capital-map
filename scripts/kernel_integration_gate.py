@@ -18,7 +18,7 @@ import stock_review_gate as stock
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = 'NEXUS-INTEGRATION-CONTRACT-v1'
-PROTOCOL = 'NEXUS-KERNEL-INTEGRATION-CHECK-v1'
+PROTOCOL = 'NEXUS-KERNEL-INTEGRATION-CHECK-v2'
 POLICY_FILES = (
     'docs/governance/REPOSITORY_GOVERNANCE.md',
     'integrations/contracts/NEXUS_INTEGRATION_CONTRACT_V1.md',
@@ -43,6 +43,12 @@ REVIEW = ('NOT_REQUIRED', 'PENDING', 'APPROVED', 'REJECTED', 'DEFERRED')
 RECONCILIATION = ('NOT_REQUIRED', 'PENDING', 'MATCHED', 'CONFLICT', 'MANUAL_REVIEW')
 ERROR = ('NONE', 'TRANSIENT', 'VALIDATION', 'AUTHORITY', 'CONFLICT', 'PERMANENT')
 VERIFICATION = ('UNVERIFIED', 'STRUCTURALLY_VERIFIED', 'HUMAN_VERIFIED', 'LIVE_VERIFIED')
+# Only these lifecycle fields describe mutable progress. Original source and
+# acceptance times, contract identity and unknown future fields stay committed.
+MUTABLE_PROGRESS_FIELDS = frozenset((
+    'processing_status', 'review_status', 'reconciliation_status',
+    'error_status', 'verification_state', 'processed_at',
+))
 
 
 def timestamp(value):
@@ -80,9 +86,13 @@ def subject_digest(packet):
 
 
 def intent_digest(packet):
-    """Lifecycle/revision advances must not create a different source event."""
-    return stock.digest({key: value for key, value in packet.items()
-                         if key not in ('lifecycle', 'expected_revision')})
+    """Exclude only explicit progress; never discard immutable event timestamps."""
+    intent = {key: value for key, value in packet.items() if key != 'expected_revision'}
+    lifecycle = packet.get('lifecycle')
+    if isinstance(lifecycle, dict):
+        intent['lifecycle'] = {key: value for key, value in lifecycle.items()
+                               if key not in MUTABLE_PROGRESS_FIELDS}
+    return stock.digest(intent)
 
 
 def retry_disposition(error, attempts, limit, submission_state):
@@ -224,11 +234,21 @@ def evaluate(packet, context, phase='preflight', *, now=None, root=ROOT):
          'Submission/unknown submission must stay at the existing financial reconciliation boundary')
 
     prior = context.get('idempotency_readback')
+    if lifecycle.get('processing_status') == 'REPLAYED':
+        need(isinstance(prior, dict) and bool(prior), 'REPLAY_PROOF_REQUIRED',
+             'REPLAYED requires a readback of the original canonical event and immutable intent')
     if prior is not None:
         prior = obj(prior, 'idempotency_readback')
         need(prior.get('event_id') == identity.get('event_id') and prior.get('intent_sha256') == intent_digest(packet)
              and prior.get('idempotency_key') == identity.get('idempotency_key'),
              'IDEMPOTENCY_CONFLICT', 'Existing key must retain the event and immutable intent')
+        need(ident(prior.get('record_ref')) and ident(prior.get('version')),
+             'IDEMPOTENCY_LOCATOR', 'Original canonical record and version required')
+        need(prior.get('authority_ref') == route.get('canonical_authority_ref')
+             and stock.text(route.get('canonical_authority_ref')),
+             'IDEMPOTENCY_AUTHORITY', 'Original event must come from the approved canonical authority')
+        refs(prior.get('evidence_refs'), 'Original-event readback')
+        fresh(prior.get('read_at'), 'Original-event readback', max_age)
         if phase == 'preflight':
             need(False, 'DUPLICATE_REUSE_ONLY', 'Do not execute again; obtain the original canonical receipt')
     need('idempotency_readback' in context, 'IDEMPOTENCY_UNKNOWN', 'Duplicate check has not been performed')
@@ -269,6 +289,9 @@ def evaluate(packet, context, phase='preflight', *, now=None, root=ROOT):
         need(canonical.get('packet_sha256') == digest, 'CANONICAL_PAYLOAD', 'Canonical payload checksum mismatch')
         need(ident(canonical.get('record_ref')) and ident(canonical.get('version')),
              'CANONICAL_LOCATOR', 'Canonical record and version required')
+        if prior is not None:
+            need(prior.get('record_ref') == canonical.get('record_ref'),
+                 'IDEMPOTENCY_LOCATOR', 'Original and current readbacks must identify the same canonical record')
         need(canonical.get('authority_ref') == route.get('canonical_authority_ref')
              and stock.text(route.get('canonical_authority_ref')), 'CANONICAL_AUTHORITY', 'Canonical authority mismatch')
         canonical_time = fresh(canonical.get('read_at'), 'Canonical readback', max_age)

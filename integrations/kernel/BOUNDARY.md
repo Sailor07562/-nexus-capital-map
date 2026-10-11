@@ -64,6 +64,43 @@ review, no unresolved exceptions and the approved destination set. Empty mirror
 sets require a specific existing applicability policy, not an author-selected
 exemption. Projection hashes compare projected content, not unlike source bytes.
 
+## Original-event and replay proof (candidate check v2)
+
+The candidate check protocol is `NEXUS-KERNEL-INTEGRATION-CHECK-v2`; the existing
+event envelope remains `NEXUS-INTEGRATION-CONTRACT-v1`. This source-only revision
+tightens the candidate readback interface, not deployed producer permissions.
+
+The immutable-intent checksum includes original `occurred_at`, original Nexus
+`received_at`, lifecycle `contract_version`, and any unknown lifecycle fields.
+Only `expected_revision` and the following progress fields are excluded:
+`processing_status`, `review_status`, `reconciliation_status`, `error_status`,
+`verification_state`, and `processed_at`. A replay attempt's receipt time belongs
+in the existing separate attempt record; it must not overwrite original event
+acceptance time. Changing immutable event bytes requires conflict handling or a
+new linked correction. Full-packet review/readback hashes still cover progress.
+
+`idempotency_readback=null` means the approved reader found no original record;
+an absent property means the duplicate check is unknown. Neither can support
+`processing_status=REPLAYED`, in preflight or closure. Every non-null readback
+must include the original `event_id`, `idempotency_key`, `intent_sha256`, stable
+canonical `record_ref`, source `version`, approved `authority_ref`, fresh
+`read_at`, and nonempty `evidence_refs`. The trusted reader must derive the digest
+from the stored original event, not echo the submitting packet or author hash.
+Freshness applies to reading the original, not to its occurrence date.
+
+Closure requires the original and current readbacks to identify the same
+canonical record. Their versions may differ as mutable progress advances, but
+original identity and intent must match. A matching original still makes every
+duplicate preflight HOLD; it never permits a second execution. Passing replay
+closure is only a structural check, not proof that an attempt was persisted,
+authenticated, atomically deduplicated or recovered successfully.
+
+There is no legacy-digest fallback: v1's lifecycle-omitting checksum cannot prove
+immutable timestamps. Existing candidate snapshots must be reread/reviewed under
+v2 and the current policy binding, deriving the digest from trusted original
+bytes. Missing original evidence remains HOLD. No runtime migration, automatic
+digest replacement, contract promotion or live deployment is included.
+
 ## Recovery and completion honesty
 
 Only a known transient, non-financial failure within the runtime's approved
