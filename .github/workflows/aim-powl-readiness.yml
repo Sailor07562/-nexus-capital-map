@@ -1,0 +1,23 @@
+name: POWL A.I.M. readiness validation
+on:
+  pull_request:
+    paths:
+      - 'work/aim/powl-readiness/**'
+      - '.github/workflows/aim-powl-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run POWL readiness worker tests
+        run: node --test work/aim/powl-readiness/readiness.test.mjs
+      - name: Assert no production deployment
+        run: |
+          echo "Validation only; no deployment, secrets, or broker access."
