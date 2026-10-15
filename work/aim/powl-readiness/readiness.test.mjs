@@ -18,9 +18,7 @@ function harness({ claims = { role: "service_role" }, action = "readiness", fail
  const fakeFetch = async (url, options) => {
    calls.push({url,options});
    if (fail) return {ok:false};
-   const data = missing ? [] : url.includes("v_mission_readiness")
-     ? [{readiness:"DELIVERED_NOT_ACKNOWLEDGED",verified_evidence_count:1,open_risks:1,sent_receipts:1,acknowledged_receipts:0}]
-     : [{governance_readiness:"NOT_READY",passed_gates:0}];
+   const data = missing ? null : {mission_id:"NEXUS-AIM-POWL-PILOT-20261015-001",readiness:"DELIVERED_NOT_ACKNOWLEDGED",verified_evidence:1,open_risks:1,sent_receipts:1,acknowledged_receipts:0,governance_readiness:"NOT_READY",passed_gates:0,read_only:true,unattended_execution_verified:false};
    return {ok:true,json:async()=>data};
  };
  const Deno = {serve:fn=>handler=fn,env:{get:k=>k==="SUPABASE_URL"?"https://sandbox.example":k==="SUPABASE_SERVICE_ROLE_KEY"?"test-service-key":null}};
@@ -39,7 +37,7 @@ test("returns actual sandbox readiness and no autonomy claim",async()=>{
  const h=harness();const response=await h.request();const body=await response.json();
  assert.equal(response.status,200);assert.equal(body.readiness,"DELIVERED_NOT_ACKNOWLEDGED");
  assert.equal(body.unattended_execution_verified,false);
- assert.equal(h.calls.length,2);
- assert.ok(h.calls.every(x=>x.options.headers["Accept-Profile"]==="aim"));
- assert.ok(h.calls.every(x=>x.options.method===undefined));
+ assert.equal(h.calls.length,1);
+ assert.ok(h.calls.every(x=>x.url.includes("/rpc/aim_powl_readiness_v1")));
+ assert.ok(h.calls.every(x=>x.options.method==="POST"));
 });
