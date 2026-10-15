@@ -1,0 +1,35 @@
+name: POWL sandbox authenticated endpoint smoke
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  endpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      POWL_SANDBOX_URL: ${{ secrets.POWL_SANDBOX_URL }}
+      POWL_SANDBOX_SERVICE_JWT: ${{ secrets.POWL_SANDBOX_SERVICE_JWT }}
+    steps:
+      - name: Check configured credentials
+        shell: bash
+        run: |
+          if [[ -z "$POWL_SANDBOX_URL" || -z "$POWL_SANDBOX_SERVICE_JWT" ]]; then
+            echo "::error::Missing sandbox URL or service JWT; no request sent."
+            exit 1
+          fi
+      - name: Reject unauthenticated request
+        shell: bash
+        run: |
+          code=$(curl --silent --show-error --max-time 15 -o /dev/null -w '%{http_code}' \
+            -X POST "$POWL_SANDBOX_URL/functions/v1/aim-powl-readiness" \
+            -H 'Content-Type: application/json' -d '{"action":"readiness"}')
+          [[ "$code" == "401" || "$code" == "403" ]] || { echo "::error::Unauthorized request was not rejected"; exit 1; }
+      - name: Verify authorized readiness
+        shell: bash
+        run: |
+          response=$(curl --fail-with-body --silent --show-error --max-time 20 \
+            -X POST "$POWL_SANDBOX_URL/functions/v1/aim-powl-readiness" \
+            -H "Authorization: Bearer $POWL_SANDBOX_SERVICE_JWT" \
+            -H 'Content-Type: application/json' -d '{"action":"readiness"}')
+          echo "$response" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["mission_id"]=="NEXUS-AIM-POWL-PILOT-20261015-001"; assert d["read_only"] is True; assert d["unattended_execution_verified"] is False; assert d["governance_readiness"]=="NOT_READY"; print("POWL sandbox authenticated read PASS")'
