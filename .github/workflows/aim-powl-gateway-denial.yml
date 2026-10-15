@@ -1,0 +1,25 @@
+name: POWL sandbox gateway denial check
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/aim-powl-gateway-denial.yml'
+      - 'work/aim/powl-readiness/**'
+permissions:
+  contents: read
+jobs:
+  unauthenticated-denial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require gateway denial without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://luodznqacfqyhskmuvjo.supabase.co/functions/v1/aim-powl-readiness"
+          code=$(curl --silent --show-error --max-time 20 --retry 1 -o /dev/null -w '%{http_code}' -X POST "$url" -H 'Content-Type: application/json' -d '{"action":"readiness"}')
+          echo "HTTP status: $code"
+          if [[ "$code" != 401 && "$code" != 403 ]]; then
+            echo "::error::Gateway did not deny an unauthenticated request"
+            exit 1
+          fi
+          echo "Unauthenticated access denied as expected"
