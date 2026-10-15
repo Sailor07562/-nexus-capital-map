@@ -36,34 +36,19 @@ Deno.serve(async (request) => {
   const base = Deno.env.get("SUPABASE_URL");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!base || !key) return respond({ error: "configuration_unavailable" }, 503);
-  const headers = { apikey: key, authorization: `Bearer ${key}`, "Accept-Profile": "aim" };
-  const read = (view: string, columns: string) =>
-    fetch(`${base}/rest/v1/${view}?mission_id=eq.${MISSION}&select=${columns}`, {
-      headers,
+  try {
+    const response = await fetch(`${base}/rest/v1/rpc/aim_powl_readiness_v1`, {
+      method: "POST",
+      headers: { apikey: key, authorization: `Bearer ${key}`, "content-type": "application/json" },
+      body: "{}",
       signal: AbortSignal.timeout(7000),
     });
-  try {
-    const [mission, governance] = await Promise.all([
-      read("v_mission_readiness_v1", "readiness,verified_evidence_count,open_risks,sent_receipts,acknowledged_receipts"),
-      read("v_governance_readiness_v1", "governance_readiness,passed_gates"),
-    ]);
-    if (!mission.ok || !governance.ok) return respond({ error: "read_unavailable" }, 503);
-    const [missions, gates] = await Promise.all([mission.json(), governance.json()]);
-    if (!Array.isArray(missions) || !Array.isArray(gates) || missions.length !== 1 || gates.length !== 1) {
-      return respond({ error: "missing_mission" }, 503);
+    if (!response.ok) return respond({ error: "read_unavailable" }, 503);
+    const data = await response.json();
+    if (!data || data.mission_id !== MISSION || data.read_only !== true) {
+      return respond({ error: "invalid_readiness" }, 503);
     }
-    return respond({
-      mission_id: MISSION,
-      readiness: missions[0].readiness,
-      governance_readiness: gates[0].governance_readiness,
-      passed_gates: gates[0].passed_gates,
-      verified_evidence: missions[0].verified_evidence_count,
-      open_risks: missions[0].open_risks,
-      sent_receipts: missions[0].sent_receipts,
-      acknowledged_receipts: missions[0].acknowledged_receipts,
-      read_only: true,
-      unattended_execution_verified: false,
-    });
+    return respond(data);
   } catch {
     return respond({ error: "read_unavailable" }, 503);
   }
