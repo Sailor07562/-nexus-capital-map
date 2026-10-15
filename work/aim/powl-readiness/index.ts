@@ -36,7 +36,7 @@ Deno.serve(async (request) => {
   const base = Deno.env.get("SUPABASE_URL");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!base || !key) return respond({ error: "configuration_unavailable" }, 503);
-  const headers = { apikey: key, authorization: `Bearer ${key}` };
+  const headers = { apikey: key, authorization: `Bearer ${key}`, "Accept-Profile": "aim" };
   const read = (view: string, columns: string) =>
     fetch(`${base}/rest/v1/${view}?mission_id=eq.${MISSION}&select=${columns}`, {
       headers,
