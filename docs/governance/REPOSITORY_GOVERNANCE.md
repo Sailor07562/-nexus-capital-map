@@ -83,3 +83,20 @@ canonical-write, and automatic-promotion controls unchanged.
 | Inheritance Note | Future Nexus stock-review templates and agents should inherit this standard. Runtime loading/enforcement requires separate implementation and verification. |
 | Supersedes | None |
 | Related Updates | `NDU-20261001-001`; existing source-verification and investment-review controls |
+
+### NDU-20261002-001
+
+| Field | Value |
+|---|---|
+| Update ID | `NDU-20261002-001` |
+| Title | Supabase First Architecture Transition |
+| Date | 2026-10-02 |
+| Status | `APPROVED_TARGET`; implementation `CUTOVER_PENDING` |
+| Source | Owner-approved architecture decision and authenticated remote verification |
+| Artifact | [NEXUS_SUPABASE_FIRST_ARCHITECTURE_TRANSITION_20261002.md](NEXUS_SUPABASE_FIRST_ARCHITECTURE_TRANSITION_20261002.md) |
+| Summary | Selects remote Supabase as the future primary operating database; retains GitHub for versioned source, Drive for evidence and recovery, and a verified future testing/recovery role for local PostgreSQL. |
+| Authority Impact | Authorizes transition preparation; existing deployed authority and gateway contracts remain pending verified cutover. Adds no broker, trading, transfer, payment, capital or automatic-promotion permission. |
+| Next Action | Map ownership, verify independent recovery, reconcile local-only records when the laptop is available, and align contracts before cutover. |
+| Supersedes | None at this transition stage |
+
+[Remote decision and verification receipt](https://drive.google.com/file/d/1-xQWdJy8Sz6dJndH1gRNzG0e65Apno5A/view?usp=drivesdk).
