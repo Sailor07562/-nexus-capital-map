@@ -46,10 +46,13 @@ A read-only worker must:
 - The receipt table has no direct event, evidence, packet, or delivery-key correlation. This is an observed schema gap, not a verified failure of an end-to-end consumer.
 - The authenticated read test proves only a read-only sandbox readiness response. It does not prove unattended source collection, evidence admission, research packet creation, alert publication, or acknowledgment receipt correlation.
 
-## Current gates
+## Current gates and state reconciliation
+- The readiness endpoint reports `readiness=ACKNOWLEDGED_NOT_AUTONOMY_VERIFIED`, `governance_readiness=NOT_READY`, `verified_evidence=1`, `open_risks=1`, and one sent/one acknowledged receipt. These are sandbox database values; they do not mean a workflow or source collector is active.
+- The mission row reports `mission_status=RUNNING` while the operational POWL lane remains paused. This status drift is unresolved and has not been changed.
+- Gate G5 remains `PENDING` with review note “Slack SENT, not ACKNOWLEDGED,” although the pilot-mission receipt row and readiness view report an acknowledgment. This recorded-state discrepancy is unresolved; no gate review or receipt was edited.
 - Readiness remains `NOT_READY`; POWL remains paused.
 - No bounded SEC source fetch or scheduled collection has been run.
-- A synthetic acknowledgment round trip requires an approved fixture-creation path for a `SENT` receipt, a defined correlation contract, and an approved retention/cleanup rule. Do not use owner-level SQL to manufacture test data.
+- A synthetic acknowledgment round trip requires an approved fixture-creation path for a `SENT` row, a defined event/evidence/packet/delivery-key correlation contract, and an approved retention/cleanup rule. Do not use owner-level SQL to manufacture test data.
 - Retention duration and cleanup authority remain unapproved; existing synthetic test rows are preserved.
 - Cloud n8n credential/TLS repair remains separate and unresolved. SSL validation must remain enabled.
 - Any future production intake must use the existing governed canonical intake RPC, with a verified restricted caller; do not create a parallel production schema or write directly to canonical tables.
