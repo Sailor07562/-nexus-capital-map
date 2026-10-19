@@ -35,5 +35,20 @@ A read-only worker must:
 - Simulated database unavailability fails closed.
 - An unattended source-to-alert run requires separate end-to-end evidence.
 
-## Current blocker
-Supabase sandbox Edge Function deployment was blocked by platform safety checks. No Edge Function is deployed. Review and deploy only through approved development/CI gates.
+## Deployment and verification readback (2026-10-19 UTC)
+- Sandbox Edge Function `aim-powl-readiness` is deployed ACTIVE at version 3 with `verify_jwt=true`.
+- Sandbox Edge Function `aim-powl-ack` is deployed ACTIVE at version 1 with `verify_jwt=true`. Its acknowledgment path has not been invoked or end-to-end tested.
+- The existing GitHub Actions workflow `.github/workflows/aim-powl-endpoint-smoke.yml` was rerun in run [38798030695](https://github.com/Sailor07562/-nexus-capital-map/actions/runs/38798030695); latest job attempt 117893766095 completed successfully.
+- The smoke test confirmed unauthenticated rejection and an authenticated read for this mission. Its assertions passed: `read_only=true`, `unattended_execution_verified=false`, and `governance_readiness=NOT_READY`.
+- This is an authenticated sandbox read test only. It does not prove unattended source collection, evidence admission, research packet creation, alert publication, or acknowledgment receipt correlation.
+
+## Current gates
+- Readiness remains `NOT_READY`; POWL remains paused.
+- No bounded SEC source fetch or scheduled collection has been run.
+- The receipt path requires a synthetic delivery receipt and a proven event/evidence/packet/delivery-key correlation before acknowledgment testing.
+- Retention duration and cleanup authority remain unapproved; synthetic test rows are preserved.
+- Cloud n8n credential/TLS repair remains separate and unresolved. SSL validation must remain enabled.
+- Any future production intake must use the existing governed canonical intake RPC, with a verified restricted caller; do not create a parallel production schema or write directly to canonical tables.
+
+## Safety boundary
+No canonical production changes, trading activity, broker actions, workflow activation, scheduled collection, or publication are authorized by this pilot status.
