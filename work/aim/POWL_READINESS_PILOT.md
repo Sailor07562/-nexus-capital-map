@@ -40,13 +40,17 @@ A read-only worker must:
 - Sandbox Edge Function `aim-powl-ack` is deployed ACTIVE at version 1 with `verify_jwt=true`. Its acknowledgment path has not been invoked or end-to-end tested.
 - The existing GitHub Actions workflow `.github/workflows/aim-powl-endpoint-smoke.yml` was rerun in run [38798030695](https://github.com/Sailor07562/-nexus-capital-map/actions/runs/38798030695); latest job attempt 117893766095 completed successfully.
 - The smoke test confirmed unauthenticated rejection and an authenticated read for this mission. Its assertions passed: `read_only=true`, `unattended_execution_verified=false`, and `governance_readiness=NOT_READY`.
-- This is an authenticated sandbox read test only. It does not prove unattended source collection, evidence admission, research packet creation, alert publication, or acknowledgment receipt correlation.
+- Read-only database inspection found `public.aim_ack_delivery_receipt_v1` is SECURITY INVOKER with a fixed `pg_catalog, aim` search path. It updates only a matching receipt ID, mission ID, original message ID, and `SENT` status; it requires acknowledgment text `Acknowledge`. An already acknowledged matching receipt is returned idempotently.
+- `aim.delivery_receipts` has RLS enabled with no policies. `anon` and `authenticated` have no table or RPC access; `service_role` can read/update the receipt table and execute the RPC but cannot insert receipts.
+- Current sandbox readback found two receipt rows, both already `ACKNOWLEDGED`; there is no `SENT` receipt to use for a controlled transition test. No acknowledgment RPC was called.
+- The receipt table has no direct event, evidence, packet, or delivery-key correlation. This is an observed schema gap, not a verified failure of an end-to-end consumer.
+- The authenticated read test proves only a read-only sandbox readiness response. It does not prove unattended source collection, evidence admission, research packet creation, alert publication, or acknowledgment receipt correlation.
 
 ## Current gates
 - Readiness remains `NOT_READY`; POWL remains paused.
 - No bounded SEC source fetch or scheduled collection has been run.
-- The receipt path requires a synthetic delivery receipt and a proven event/evidence/packet/delivery-key correlation before acknowledgment testing.
-- Retention duration and cleanup authority remain unapproved; synthetic test rows are preserved.
+- A synthetic acknowledgment round trip requires an approved fixture-creation path for a `SENT` receipt, a defined correlation contract, and an approved retention/cleanup rule. Do not use owner-level SQL to manufacture test data.
+- Retention duration and cleanup authority remain unapproved; existing synthetic test rows are preserved.
 - Cloud n8n credential/TLS repair remains separate and unresolved. SSL validation must remain enabled.
 - Any future production intake must use the existing governed canonical intake RPC, with a verified restricted caller; do not create a parallel production schema or write directly to canonical tables.
 
