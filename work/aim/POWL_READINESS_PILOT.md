@@ -48,8 +48,9 @@ A read-only worker must:
 
 ## Current gates and state reconciliation
 - The readiness endpoint reports `readiness=ACKNOWLEDGED_NOT_AUTONOMY_VERIFIED`, `governance_readiness=NOT_READY`, `verified_evidence=1`, `open_risks=1`, and one sent/one acknowledged receipt. These are sandbox database values; they do not mean a workflow or source collector is active.
-- The mission row reports `mission_status=RUNNING` while the operational POWL lane remains paused. This status drift is unresolved and has not been changed.
-- Gate G5 remains `PENDING` with review note “Slack SENT, not ACKNOWLEDGED,” although the pilot-mission receipt row and readiness view report an acknowledgment. This recorded-state discrepancy is unresolved; no gate review or receipt was edited.
+- `aim.v_mission_readiness_v1.mission_status` directly aliases the stored `aim.missions.status` field. The mission row says `RUNNING`, but this is not a live execution check. Separate runtime checks for `cloud_research_runner`, `alert_delivery_pipeline`, and `automatic_recovery` are all `UNKNOWN`; operational POWL remains paused.
+- Gate G5 remains `PENDING`, with no reviewer or review timestamp and review note “Slack SENT, not ACKNOWLEDGED,” although the pilot-mission receipt row and readiness view report an acknowledgment. This recorded-state discrepancy is unresolved; no gate review or receipt was edited.
+- All six gate reviews remain `PENDING`. A database trigger blocks mission promotion to `VERIFIED` or `CLOSED` unless all six gates are `PASS` and an acknowledged receipt exists; no gate promotion was attempted.
 - Readiness remains `NOT_READY`; POWL remains paused.
 - No bounded SEC source fetch or scheduled collection has been run.
 - A synthetic acknowledgment round trip requires an approved fixture-creation path for a `SENT` row, a defined event/evidence/packet/delivery-key correlation contract, and an approved retention/cleanup rule. Do not use owner-level SQL to manufacture test data.
