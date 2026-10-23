@@ -1,0 +1,377 @@
+{
+  "mission_id": "NEXUS-CT-RECONCILER-ADJUDICATION-20261023-001",
+  "validated_at_utc": "2026-10-23T17:19:38.990211+00:00",
+  "container": "nexus-ct-adjudication-20261023-c3266cf9",
+  "container_id": "dd9cb87e8037a7c4ccaf2913f288a05a05f596ea5135683bfc91997a40acc732",
+  "image_id": "sha256:3645570cccdfa447589da9f57dd740faa29b30938e861289a5574b6ca6b03826",
+  "database": "ct_adjudication_20261023171927_e3d8c965",
+  "atomic_failure_database": "ct_adjudication_20261023171927_e3d8c965_rollback",
+  "server_version_num": "170011",
+  "network": "none",
+  "host_ports": [],
+  "binds": [],
+  "production_credentials_used": false,
+  "migration_applied_exit_code": 0,
+  "migration_sha256": "ee3e26cb82502bee5e70814f3573191ff8d2c4fa658f09508ed1cfd361340c2a",
+  "results": [
+    {
+      "name": "Stale orphan adjudication restores freshness only with otherwise healthy runtime",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 1,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.871485+00:00"
+    },
+    {
+      "name": "Recent unfinished run is rejected with 22023",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 2,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.874056+00:00"
+    },
+    {
+      "name": "Already finished run is rejected with 22023",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 3,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.875368+00:00"
+    },
+    {
+      "name": "Unknown run is rejected with 22023",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 4,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.876099+00:00"
+    },
+    {
+      "name": "Duplicate adjudication rejects with 23505 and preserves original record",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 5,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.877644+00:00"
+    },
+    {
+      "name": "Only abandoned disposition is accepted",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 6,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.879086+00:00"
+    },
+    {
+      "name": "Reason rejects null short padded and oversized inputs",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 7,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.880469+00:00"
+    },
+    {
+      "name": "Evidence rejects missing malformed short long and oversized references",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 8,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.882419+00:00"
+    },
+    {
+      "name": "Actor rejects null malformed too-short and oversized identity",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 9,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.883724+00:00"
+    },
+    {
+      "name": "Unrelated stale orphan remains visible and keeps HOLD",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 10,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.88503+00:00"
+    },
+    {
+      "name": "Critical alert remains counted; unchanged runtime must expose baseline gate gap",
+      "detail": "BASELINE_GAP: unchanged production runtime_snapshot reports ready=true with critical_alert_count_24h=1; alert preserved; no alert gate was fabricated",
+      "status": "BASELINE_GAP",
+      "test_id": 11,
+      "sqlstate": "ZX002",
+      "recorded_at": "2026-10-23T17:19:28.88672+00:00"
+    },
+    {
+      "name": "Unreconciled claim remains counted and keeps HOLD",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 12,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.888307+00:00"
+    },
+    {
+      "name": "Latest failed completion still keeps HOLD",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 13,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.889674+00:00"
+    },
+    {
+      "name": "Old last completion still keeps HOLD",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 14,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.891323+00:00"
+    },
+    {
+      "name": "Adjudications reject UPDATE with append-only 55000",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 15,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.892296+00:00"
+    },
+    {
+      "name": "Adjudications reject DELETE with append-only 55000",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 16,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.893162+00:00"
+    },
+    {
+      "name": "Adjudications reject TRUNCATE with append-only 55000",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 17,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.893983+00:00"
+    },
+    {
+      "name": "Late genuine finish still appends through unchanged writer",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 18,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.895544+00:00"
+    },
+    {
+      "name": "Anon authenticated and BYPASSRLS service_role direct inserts are denied",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 19,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.898248+00:00"
+    },
+    {
+      "name": "Anon authenticated and service_role actual function calls are denied",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 20,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.899011+00:00"
+    },
+    {
+      "name": "Adjudication table functions and health view remain owner-only",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 21,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.900116+00:00"
+    },
+    {
+      "name": "Existing event schema trigger ACL and writer functions are unchanged",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 22,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.902234+00:00"
+    },
+    {
+      "name": "Caller cannot forge adjudication identifiers timestamps or recorded_by",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 23,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.903309+00:00"
+    },
+    {
+      "name": "Exact two-minute cutoff is still too recent",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 24,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.904285+00:00"
+    },
+    {
+      "name": "Null run identity is rejected without records",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 25,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.904679+00:00"
+    },
+    {
+      "name": "Valid minimum and maximum evidence and reason lengths accepted",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 26,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.906537+00:00"
+    },
+    {
+      "name": "Existing event append-only UPDATE DELETE and TRUNCATE still reject",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 27,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.90778+00:00"
+    },
+    {
+      "name": "Inactive authority retains HOLD after orphan exclusion",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 28,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.909736+00:00"
+    },
+    {
+      "name": "Normal started-to-finished lifecycle stays nonstale without adjudication",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 29,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.911451+00:00"
+    },
+    {
+      "name": "All other health observations remain identical after orphan exclusion",
+      "detail": "All assertions passed; scenario rolled back",
+      "status": "PASS",
+      "test_id": 30,
+      "sqlstate": "00000",
+      "recorded_at": "2026-10-23T17:19:28.914159+00:00"
+    },
+    {
+      "test_id": 140,
+      "name": "Migration replay rejects atomically without drift",
+      "status": "PASS",
+      "sqlstate": "42710"
+    },
+    {
+      "test_id": 141,
+      "name": "Late ACL guard failure rolls back all new DDL and view change",
+      "status": "PASS",
+      "sqlstate": "42501"
+    },
+    {
+      "test_id": 142,
+      "name": "Semantic drift inside a SQL literal fails the exact baseline guard",
+      "status": "PASS",
+      "sqlstate": "55000"
+    }
+  ],
+  "counts": {
+    "PASS": 32,
+    "FAIL": 0,
+    "BASELINE_GAP": 1
+  },
+  "concurrency": {
+    "suite": "reconciler_run_adjudication_concurrency",
+    "container": "nexus-ct-adjudication-20261023-c3266cf9",
+    "database": "ct_adjudication_20261023171927_e3d8c965",
+    "started_utc": "2026-10-23T17:19:32.656191+00:00",
+    "status": "PASS",
+    "tests": [
+      {
+        "test": "writer_committed_before_adjudication",
+        "status": "PASS",
+        "sqlstate": "22023",
+        "prior_transaction_read": true,
+        "counts": {
+          "started": 1,
+          "finished": 1,
+          "adjudications": 0
+        }
+      },
+      {
+        "test": "active_writer_rejects_adjudication",
+        "status": "PASS",
+        "sqlstate": "55P03",
+        "counts": {
+          "started": 1,
+          "finished": 1,
+          "adjudications": 0
+        }
+      },
+      {
+        "test": "adjudicator_blocks_then_preserves_late_finish",
+        "status": "PASS",
+        "writer_ungranted_relation_lock_observed": true,
+        "real_finish_preserved": true,
+        "counts": {
+          "started": 1,
+          "finished": 1,
+          "adjudications": 1
+        }
+      },
+      {
+        "test": "concurrent_adjudications_reject_busy_then_duplicate",
+        "status": "PASS",
+        "active_sqlstate": "55P03",
+        "committed_sqlstate": "23505",
+        "counts": {
+          "started": 1,
+          "finished": 0,
+          "adjudications": 1
+        }
+      },
+      {
+        "test": "transaction_snapshot_isolation_rejected",
+        "status": "PASS",
+        "rejected_isolations": {
+          "REPEATABLE READ": "25001",
+          "SERIALIZABLE": "25001"
+        },
+        "counts": {
+          "started": 1,
+          "finished": 1,
+          "adjudications": 0
+        }
+      }
+    ],
+    "synthetic_run_ids": {
+      "committed_finish": "c7231023-b193-405a-ae73-a1612463ec3e",
+      "active_writer": "c7231023-0f7c-459e-9169-c41b00968976",
+      "late_finish": "c7231023-aa04-447c-b64f-c9fef60bfca0",
+      "duplicate": "c7231023-7b1b-4e89-973f-0ac2776b1a65",
+      "isolation_rejected": "c7231023-1212-41a1-834d-f62c3c0661ea"
+    },
+    "completed_utc": "2026-10-23T17:19:38.980317+00:00"
+  },
+  "acceptance_passed": false,
+  "review_required": true,
+  "sandbox_guard_tests": {
+    "tests": 7,
+    "pass": 7,
+    "fail": 0,
+    "python_optimized": true
+  },
+  "status": "VERIFIED_WITH_LIMITS",
+  "gate": "MIGRATION_READY_FOR_REVIEW",
+  "baseline_main_sha": "06c7a072dae2dc2e5abf4111ceeb2abaae8080aa",
+  "database_checks": {
+    "PASS": 37,
+    "FAIL": 0,
+    "BASELINE_GAP": 1
+  },
+  "unmet_required_acceptance": [
+    11
+  ],
+  "required_acceptance_passed": 13,
+  "required_acceptance_total": 14,
+  "production_applied": false,
+  "trading_action": false
+}

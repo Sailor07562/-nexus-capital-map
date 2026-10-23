@@ -1,0 +1,546 @@
+{
+  "mission": "NEXUS-CT-RECONCILER-ADJUDICATION-20261023-001",
+  "project": "husnmxgsxasoinhklpfx",
+  "baseline_main": "06c7a072dae2dc2e5abf4111ceeb2abaae8080aa",
+  "registered_migration_head": "20261011094020_ct_policy_driven_symbol_growth_20261011",
+  "captured_at_utc": "2026-10-23T16:58:26.314Z",
+  "table_and_view": {
+    "columns": [
+      {
+        "data_type": "uuid",
+        "column_name": "reconciler_run_event_id",
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "data_type": "uuid",
+        "column_name": "run_id",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "text",
+        "column_name": "event_type",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "text",
+        "column_name": "run_state",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "integer",
+        "column_name": "selected_count",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "integer",
+        "column_name": "succeeded_count",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "integer",
+        "column_name": "failed_count",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "integer",
+        "column_name": "broker_post_count",
+        "is_nullable": "NO",
+        "column_default": "0"
+      },
+      {
+        "data_type": "jsonb",
+        "column_name": "outcomes",
+        "is_nullable": "NO",
+        "column_default": "'[]'::jsonb"
+      },
+      {
+        "data_type": "text",
+        "column_name": "executor_request_id",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "timestamp with time zone",
+        "column_name": "occurred_at",
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "data_type": "timestamp with time zone",
+        "column_name": "recorded_at",
+        "is_nullable": "NO",
+        "column_default": "clock_timestamp()"
+      }
+    ],
+    "database": "postgres",
+    "triggers": [
+      "CREATE TRIGGER reconciler_run_events_append_only BEFORE DELETE OR UPDATE OR TRUNCATE ON nexus_live_trading.reconciler_run_events FOR EACH STATEMENT EXECUTE FUNCTION nexus_live_trading.reject_append_only_mutation()"
+    ],
+    "relations": [
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_authority_events_pkey",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_authority_events_event_key_key",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_run_events_pkey",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_run_events_run_id_event_type_key",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_dispatch_events_pkey",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_dispatch_events_net_request_id_key",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_alert_events_pkey",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciler_alert_events_alert_key_key",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciliation_receipts_pkey",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciliation_receipts_operation_id_key",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciliation_receipts_receipt_code_key",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "reconciliation_receipts_broker_order_id_key",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": null,
+        "relkind": "i",
+        "relname": "ix_live_reconciliation_remote_request",
+        "reloptions": null,
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": [
+          "postgres=arwdDxtm/postgres"
+        ],
+        "relkind": "r",
+        "relname": "reconciler_authority_events",
+        "reloptions": null,
+        "relrowsecurity": true,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": [
+          "postgres=arwdDxtm/postgres"
+        ],
+        "relkind": "r",
+        "relname": "reconciler_run_events",
+        "reloptions": null,
+        "relrowsecurity": true,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": [
+          "postgres=arwdDxtm/postgres"
+        ],
+        "relkind": "r",
+        "relname": "reconciler_dispatch_events",
+        "reloptions": null,
+        "relrowsecurity": true,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": [
+          "postgres=arwdDxtm/postgres"
+        ],
+        "relkind": "r",
+        "relname": "reconciler_alert_events",
+        "reloptions": null,
+        "relrowsecurity": true,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": [
+          "postgres=arwdDxtm/postgres"
+        ],
+        "relkind": "r",
+        "relname": "reconciliation_receipts",
+        "reloptions": null,
+        "relrowsecurity": true,
+        "relforcerowsecurity": false
+      },
+      {
+        "owner": "postgres",
+        "relacl": [
+          "postgres=arwdDxtm/postgres"
+        ],
+        "relkind": "v",
+        "relname": "v_reconciler_health",
+        "reloptions": [
+          "security_invoker=true"
+        ],
+        "relrowsecurity": false,
+        "relforcerowsecurity": false
+      }
+    ],
+    "constraints": [
+      {
+        "conname": "reconciler_run_events_broker_post_count_check",
+        "definition": "CHECK (broker_post_count = 0)"
+      },
+      {
+        "conname": "reconciler_run_events_check",
+        "definition": "CHECK (event_type = 'started'::text AND run_state = 'running'::text AND selected_count = 0 AND succeeded_count = 0 AND failed_count = 0 AND jsonb_array_length(outcomes) = 0 OR event_type = 'finished'::text AND (run_state = ANY (ARRAY['completed'::text, 'completed_with_failures'::text])) AND selected_count = (succeeded_count + failed_count) AND jsonb_array_length(outcomes) = selected_count OR event_type = 'finished'::text AND run_state = 'batch_failed'::text AND selected_count = 0 AND succeeded_count = 0 AND failed_count = 1 AND jsonb_array_length(outcomes) = 1)"
+      },
+      {
+        "conname": "reconciler_run_events_event_type_check",
+        "definition": "CHECK (event_type = ANY (ARRAY['started'::text, 'finished'::text]))"
+      },
+      {
+        "conname": "reconciler_run_events_executor_request_id_check",
+        "definition": "CHECK (length(btrim(executor_request_id)) >= 8 AND length(btrim(executor_request_id)) <= 128)"
+      },
+      {
+        "conname": "reconciler_run_events_failed_count_check",
+        "definition": "CHECK (failed_count >= 0 AND failed_count <= 20)"
+      },
+      {
+        "conname": "reconciler_run_events_outcomes_check",
+        "definition": "CHECK (jsonb_typeof(outcomes) = 'array'::text AND jsonb_array_length(outcomes) <= 20)"
+      },
+      {
+        "conname": "reconciler_run_events_pkey",
+        "definition": "PRIMARY KEY (reconciler_run_event_id)"
+      },
+      {
+        "conname": "reconciler_run_events_run_id_event_type_key",
+        "definition": "UNIQUE (run_id, event_type)"
+      },
+      {
+        "conname": "reconciler_run_events_run_state_check",
+        "definition": "CHECK (run_state = ANY (ARRAY['running'::text, 'completed'::text, 'completed_with_failures'::text, 'batch_failed'::text]))"
+      },
+      {
+        "conname": "reconciler_run_events_selected_count_check",
+        "definition": "CHECK (selected_count >= 0 AND selected_count <= 20)"
+      },
+      {
+        "conname": "reconciler_run_events_succeeded_count_check",
+        "definition": "CHECK (succeeded_count >= 0 AND succeeded_count <= 20)"
+      }
+    ],
+    "health_view": " SELECT ( SELECT max(d.dispatched_at) AS max\n           FROM nexus_live_trading.reconciler_dispatch_events d) AS last_dispatch_at,\n    ( SELECT max(r.occurred_at) AS max\n           FROM nexus_live_trading.reconciler_run_events r\n          WHERE r.event_type = 'started'::text) AS last_started_at,\n    ( SELECT max(r.occurred_at) AS max\n           FROM nexus_live_trading.reconciler_run_events r\n          WHERE r.event_type = 'finished'::text) AS last_finished_at,\n    ( SELECT r.run_state\n           FROM nexus_live_trading.reconciler_run_events r\n          WHERE r.event_type = 'finished'::text\n          ORDER BY r.occurred_at DESC, r.recorded_at DESC, r.reconciler_run_event_id DESC\n         LIMIT 1) AS last_finished_state,\n    ( SELECT count(*)::integer AS count\n           FROM nexus_live_trading.reconciler_run_events s\n          WHERE s.event_type = 'started'::text AND s.occurred_at < (statement_timestamp() - '00:02:00'::interval) AND NOT (EXISTS ( SELECT 1\n                   FROM nexus_live_trading.reconciler_run_events f\n                  WHERE f.run_id = s.run_id AND f.event_type = 'finished'::text))) AS stale_started_run_count,\n    ( SELECT count(*)::integer AS count\n           FROM nexus_live_trading.trade_authorizations a\n          WHERE a.authorization_kind = 'exact_action_time_ticket'::text AND (EXISTS ( SELECT 1\n                   FROM nexus_live_trading.trade_events c\n                  WHERE c.operation_id = a.operation_id AND c.event_type = 'submission_claimed'::text)) AND NOT (EXISTS ( SELECT 1\n                   FROM nexus_live_trading.reconciliation_receipts rr\n                  WHERE rr.operation_id = a.operation_id))) AS unreconciled_claim_count,\n    ( SELECT count(*)::integer AS count\n           FROM nexus_live_trading.reconciler_alert_events a\n          WHERE a.observed_at >= (statement_timestamp() - '24:00:00'::interval)) AS critical_alert_count_24h;",
+    "server_version": "17.6"
+  },
+  "interfaces": {
+    "indexes": [
+      "CREATE UNIQUE INDEX reconciler_run_events_pkey ON nexus_live_trading.reconciler_run_events USING btree (reconciler_run_event_id)",
+      "CREATE UNIQUE INDEX reconciler_run_events_run_id_event_type_key ON nexus_live_trading.reconciler_run_events USING btree (run_id, event_type)"
+    ],
+    "functions": [
+      {
+        "oid": "39010",
+        "args": "",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "reject_append_only_mutation",
+        "prosecdef": false
+      },
+      {
+        "oid": "39050",
+        "args": "",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "reconciler_health",
+        "prosecdef": true
+      },
+      {
+        "oid": "39063",
+        "args": "target_operation_id text, target_order jsonb, target_broker_get_count integer, target_broker_request_evidence jsonb",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "record_reconciliation_receipt",
+        "prosecdef": true
+      },
+      {
+        "oid": "39048",
+        "args": "target_reconciler_token text",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "verify_reconciler_token",
+        "prosecdef": true
+      },
+      {
+        "oid": "39049",
+        "args": "target_run_id uuid, target_event_type text, target_run_state text, target_selected_count integer, target_succeeded_count integer, target_failed_count integer, target_outcomes jsonb, target_executor_request_id text, target_occurred_at timestamp with time zone",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "record_reconciler_run_event",
+        "prosecdef": true
+      },
+      {
+        "oid": "39051",
+        "args": "",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "record_reconciler_staleness_alert",
+        "prosecdef": true
+      },
+      {
+        "oid": "39052",
+        "args": "",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "dispatch_reconciler_http",
+        "prosecdef": true
+      },
+      {
+        "oid": "39054",
+        "args": "target_limit integer",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "pending_reconciliation_operation_ids",
+        "prosecdef": true
+      },
+      {
+        "oid": "39057",
+        "args": "target_operation_id text, target_ticket_sha256 text, target_receipt_code text, target_reconciliation_state text, target_broker_order_id text, target_broker_order_status text, target_filled_quantity numeric, target_filled_average_price numeric, target_submitted_at timestamp with time zone, target_filled_at timestamp with time zone, target_terminal_at timestamp with time zone, target_broker_post_count integer, target_broker_get_count integer, target_broker_request_evidence jsonb, target_summary text, target_evidence_reference text",
+        "owner": "postgres",
+        "proacl": [
+          "postgres=X/postgres"
+        ],
+        "proname": "reconciliation_receipt_sha256",
+        "prosecdef": false
+      }
+    ],
+    "schema_acl": [
+      "postgres=UC/postgres"
+    ],
+    "role_grants": [
+      {
+        "grantee": "postgres",
+        "table_name": "reconciler_run_events",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "reconciler_run_events",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "reconciler_run_events",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "reconciler_run_events",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "reconciler_run_events",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "reconciler_run_events",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "reconciler_run_events",
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "v_reconciler_health",
+        "privilege_type": "INSERT"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "v_reconciler_health",
+        "privilege_type": "SELECT"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "v_reconciler_health",
+        "privilege_type": "UPDATE"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "v_reconciler_health",
+        "privilege_type": "DELETE"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "v_reconciler_health",
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "v_reconciler_health",
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "grantee": "postgres",
+        "table_name": "v_reconciler_health",
+        "privilege_type": "TRIGGER"
+      }
+    ],
+    "health_dependents": null
+  },
+  "functions": [
+    {
+      "name": "reconciler_health",
+      "definition": "CREATE OR REPLACE FUNCTION nexus_live_trading.reconciler_health()\n RETURNS jsonb\n LANGUAGE sql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog'\nAS $function$\n  select coalesce((select to_jsonb(h) from nexus_live_trading.v_reconciler_health h),'{}'::jsonb)\n$function$\n"
+    },
+    {
+      "name": "record_reconciler_run_event",
+      "definition": "CREATE OR REPLACE FUNCTION nexus_live_trading.record_reconciler_run_event(target_run_id uuid, target_event_type text, target_run_state text, target_selected_count integer, target_succeeded_count integer, target_failed_count integer, target_outcomes jsonb, target_executor_request_id text, target_occurred_at timestamp with time zone)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog'\nAS $function$\ndeclare\n  new_event_id uuid;\n  existing nexus_live_trading.reconciler_run_events%rowtype;\nbegin\n  if target_run_id is null\n     or target_event_type not in ('started','finished')\n     or target_run_state not in ('running','completed','completed_with_failures','batch_failed')\n     or target_occurred_at is null\n     or target_occurred_at > clock_timestamp()+interval '1 minute'\n     or target_occurred_at < clock_timestamp()-interval '10 minutes'\n     or jsonb_typeof(target_outcomes) is distinct from 'array'\n     or octet_length(target_outcomes::text) > 65536 then\n    raise exception using errcode='22023', message='reconciler_run_event_invalid';\n  end if;\n\n  insert into nexus_live_trading.reconciler_run_events (\n    run_id,event_type,run_state,selected_count,succeeded_count,failed_count,\n    broker_post_count,outcomes,executor_request_id,occurred_at\n  ) values (\n    target_run_id,target_event_type,target_run_state,target_selected_count,\n    target_succeeded_count,target_failed_count,0,target_outcomes,\n    target_executor_request_id,target_occurred_at\n  ) on conflict (run_id,event_type) do nothing\n  returning reconciler_run_event_id into new_event_id;\n  if new_event_id is not null then return new_event_id; end if;\n\n  select * into existing from nexus_live_trading.reconciler_run_events\n  where run_id=target_run_id and event_type=target_event_type;\n  if existing.run_state is distinct from target_run_state\n     or existing.selected_count is distinct from target_selected_count\n     or existing.succeeded_count is distinct from target_succeeded_count\n     or existing.failed_count is distinct from target_failed_count\n     or existing.outcomes is distinct from target_outcomes\n     or existing.executor_request_id is distinct from target_executor_request_id\n     or existing.occurred_at is distinct from target_occurred_at then\n    raise exception using errcode='23505', message='reconciler_run_event_replay_mismatch';\n  end if;\n  return existing.reconciler_run_event_id;\nend;\n$function$\n"
+    },
+    {
+      "name": "reject_append_only_mutation",
+      "definition": "CREATE OR REPLACE FUNCTION nexus_live_trading.reject_append_only_mutation()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'pg_catalog'\nAS $function$\nbegin\n  raise exception using errcode = '55000', message = format('%s is append-only', tg_table_name);\nend;\n$function$\n"
+    }
+  ],
+  "runtime": {
+    "runtime_snapshot": "CREATE OR REPLACE FUNCTION nexus_ct_live_command.runtime_snapshot()\n RETURNS jsonb\n LANGUAGE plpgsql\n STABLE SECURITY DEFINER\n SET search_path TO 'pg_catalog', 'pg_temp'\nAS $function$\ndeclare\n  authority nexus_live_trading.authority_events%rowtype;\n  health nexus_live_trading.v_reconciler_health%rowtype;\n  policy nexus_ct_live_command.risk_policy_events%rowtype;\n  reconciler_fresh boolean;\n  symbol_policy_ready boolean;\n  ready boolean;\nbegin\n  select * into authority from nexus_live_trading.v_current_authority limit 1;\n  select * into health from nexus_live_trading.v_reconciler_health limit 1;\n  policy := nexus_ct_live_command.current_policy();\n  reconciler_fresh := health.last_finished_state = 'completed'\n    and health.last_finished_at >= clock_timestamp() - interval '3 minutes'\n    and coalesce(health.stale_started_run_count, 0) = 0\n    and coalesce(health.unreconciled_claim_count, 0) = 0;\n  symbol_policy_ready := nexus_ct_live_command.valid_symbol_set(policy.allowed_symbols);\n  ready := authority.authority_state = 'active'\n    and authority.execution_enabled is true\n    and authority.kill_switch_engaged is false\n    and authority.exact_action_time_ticket_required is true\n    and authority.automatic_trading_enabled is false\n    and policy.policy_state = 'active'\n    and symbol_policy_ready\n    and reconciler_fresh;\n  return jsonb_build_object(\n    'ready', ready,\n    'authority_state', authority.authority_state,\n    'execution_enabled', authority.execution_enabled,\n    'kill_switch_engaged', authority.kill_switch_engaged,\n    'automatic_trading_enabled', authority.automatic_trading_enabled,\n    'operating_mode', authority.operating_mode,\n    'last_reconciler_finished_at', health.last_finished_at,\n    'last_reconciler_state', health.last_finished_state,\n    'stale_started_run_count', coalesce(health.stale_started_run_count, 0),\n    'unreconciled_claim_count', coalesce(health.unreconciled_claim_count, 0),\n    'reconciler_fresh', reconciler_fresh,\n    'policy_state', policy.policy_state,\n    'allowed_symbols', coalesce(to_jsonb(policy.allowed_symbols), '[]'::jsonb),\n    'symbol_policy_ready', symbol_policy_ready\n  );\nend;\n$function$\n",
+    "health_dependencies": [
+      {
+        "nspname": "nexus_live_trading",
+        "relkind": "r",
+        "relname": "reconciler_alert_events"
+      },
+      {
+        "nspname": "nexus_live_trading",
+        "relkind": "r",
+        "relname": "reconciler_dispatch_events"
+      },
+      {
+        "nspname": "nexus_live_trading",
+        "relkind": "r",
+        "relname": "reconciler_run_events"
+      },
+      {
+        "nspname": "nexus_live_trading",
+        "relkind": "r",
+        "relname": "reconciliation_receipts"
+      },
+      {
+        "nspname": "nexus_live_trading",
+        "relkind": "r",
+        "relname": "trade_authorizations"
+      },
+      {
+        "nspname": "nexus_live_trading",
+        "relkind": "r",
+        "relname": "trade_events"
+      }
+    ]
+  },
+  "scope": "Schema definitions only; no production rows or credentials. Runtime supporting relations are reduced synthetic fixtures."
+}
