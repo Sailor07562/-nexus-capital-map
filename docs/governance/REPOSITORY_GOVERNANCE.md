@@ -83,3 +83,19 @@ canonical-write, and automatic-promotion controls unchanged.
 | Inheritance Note | Future Nexus stock-review templates and agents should inherit this standard. Runtime loading/enforcement requires separate implementation and verification. |
 | Supersedes | None |
 | Related Updates | `NDU-20261001-001`; existing source-verification and investment-review controls |
+
+### NEXUS-LIVE-AUTHORITY-20261002-001
+
+| Field | Value |
+|---|---|
+| Title | Human-Gated Live Trading Authority |
+| Date | 2026-10-02 |
+| Decision | User approved the conditional human-gated live-trading model |
+| Activation | APPROVED_PENDING_CANONICAL_RECONCILIATION_AND_RUNTIME_VERIFICATION |
+| Artifact | [NEXUS_HUMAN_GATED_LIVE_TRADING_AUTHORITY_20261002.md](NEXUS_HUMAN_GATED_LIVE_TRADING_AUTHORITY_20261002.md) |
+| Scope | Prepare, validate, route, execute, reconcile, and receipt only an exact action-time authorized ticket after activation conditions pass |
+| Exclusions | Autonomous/unattended trading, transfers, automatic authority inheritance, and global adapter permission changes |
+| Canonical authority | Local PostgreSQL; no Supabase cutover |
+| Next action | Verify laptop connection and canonical contracts; repair the existing POWL receipt without resubmitting; complete runtime activation checks |
+
+This registry entry records the approved conditional model. It does not activate a broker surface, change the Paper-only adapter registry, or authorize an individual live order.
