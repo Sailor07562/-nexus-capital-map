@@ -1,0 +1,102 @@
+{
+  "captured_at": "2026-09-22",
+  "status": "review_candidate",
+  "prime_rule": "No engine without purpose, boundaries, receipts, and authority.",
+  "promotion_standard": [
+    "declared_purpose",
+    "explicit_boundaries",
+    "postgresql_or_governance_authority_surface",
+    "readback_views_or_receipts",
+    "regression_or_compliance_checks",
+    "command_tower_visibility",
+    "human_authority_stop"
+  ],
+  "capital_boundary": {
+    "live_trading": false,
+    "capital_movement": false,
+    "self_approval": false,
+    "paper_execution": "approval_gated"
+  },
+  "engines": [
+    {
+      "engine_code": "nexus_scraper_intake_engine",
+      "display_name": "Scraper / Intake Engine",
+      "status": "governed_capability",
+      "purpose": "Gather approved source packets into the governed intake queue.",
+      "authority_surface": "n8n allowlisted source fetch plus restricted PostgreSQL intake functions",
+      "receipts": ["nexus.v_automation_intake_queue", "n8n execution history", "source registry"],
+      "forbidden": ["autonomous crawling", "evidence admission", "decisions", "trades", "capital actions"],
+      "promotion_next": "Keep source registry, dedupe, review queue, and human admission path verified."
+    },
+    {
+      "engine_code": "nexus_decision_engine",
+      "display_name": "Decision Engine",
+      "status": "formal_live",
+      "purpose": "Turn admitted evidence and portfolio context into governed assessment state.",
+      "authority_surface": "PostgreSQL policy ledger, append-only assessments, workbench and proposal queue",
+      "receipts": ["nexus.v_decision_engine_workbench", "assessment/current views", "proposal/review records"],
+      "forbidden": ["direct trade execution", "self approval", "capital movement", "brokerage calls"],
+      "promotion_next": "Keep decision-grade valuation, cash, debt, reserve, overlap, and reviewer approval gates intact."
+    },
+    {
+      "engine_code": "nexus_investing_engine",
+      "display_name": "Investing Engine",
+      "status": "formal_live",
+      "purpose": "Orchestrate intake, evidence, Decision Engine, capital controls, shadow observation, and Paper boundary.",
+      "authority_surface": "nexus.v_investing_engine_status and nexus.v_investing_engine_workbench",
+      "receipts": ["Investing Engine census", "Command Tower status payload", "paper policy health"],
+      "forbidden": ["mission self-definition", "investment approval", "live trading enablement", "ungated orders"],
+      "promotion_next": "Maintain verified component count, workbench readback, and no live trading authority."
+    },
+    {
+      "engine_code": "nexus_capital_deployment_engine",
+      "display_name": "Capital Deployment Engine",
+      "status": "distributed_control",
+      "purpose": "Gate whether capital deployment is allowed after liquidity, reserve, debt, valuation, and overlap checks.",
+      "authority_surface": "capital posture, portfolio decision contexts, Decision Engine validation, Paper policy gates",
+      "receipts": ["capital posture checks", "decision assessments", "paper receipts"],
+      "forbidden": ["force deployment", "live orders", "capital movement", "self approval", "transfers", "margin", "shorts", "options", "crypto"],
+      "promotion_next": "Keep distributed controls and regression receipts verified; a standalone deployment authority remains intentionally absent."
+    },
+    {
+      "engine_code": "nexus_research_radar_engine",
+      "display_name": "Research Radar Engine",
+      "status": "review_only",
+      "purpose": "Organize official-record signals, state lanes, research queues, and candidate review flow.",
+      "authority_surface": "research radar lane/source/status views",
+      "receipts": ["nexus.v_research_radar_governance_health", "nexus.v_research_radar_state_status", "review queues"],
+      "forbidden": ["unauthorized scraper deployment", "thesis promotion", "Decision Engine override", "trade action"],
+      "promotion_next": "Keep official-record-first source rules, lane validation, and human review gates visible."
+    },
+    {
+      "engine_code": "nexus_consumer_intelligence_engine",
+      "display_name": "Consumer Intelligence / Consumer Review Engine",
+      "status": "review_only",
+      "purpose": "Manage consumer-sector review packets, sufficiency checks, monitoring-only statuses, and review completion.",
+      "authority_surface": "consumer review packet, completion, requirement, artifact, and dashboard views",
+      "receipts": ["consumer completion status", "packet artifacts", "review dashboards", "backup packages"],
+      "forbidden": ["investment approval", "capital action", "trade authority"],
+      "promotion_next": "Preserve monitoring-only boundary and require human review before any action lane."
+    },
+    {
+      "engine_code": "nexus_governance_engine",
+      "display_name": "Governance Engine",
+      "status": "governed_capability",
+      "purpose": "Enforce cross-system authority, scope, boundaries, compliance tests, and promotion gates.",
+      "authority_surface": "broader Nexus Governance database and compliance records once explicitly mapped",
+      "receipts": ["governance registrations", "certifications", "compliance tests", "Command Tower gates"],
+      "forbidden": ["claiming formal governance from local safeguards alone", "bypassing human authority"],
+      "promotion_next": "Keep authority registry, boundary checks, and human-stop receipts verified; formal governance authority remains separately gated."
+    },
+    {
+      "engine_code": "nexus_infrastructure_context_engine",
+      "display_name": "Infrastructure Context Engine",
+      "status": "governed_capability",
+      "purpose": "Map raw signal context, environment/constraint relationships, and contextual routing.",
+      "authority_surface": "raw signal context and validation records if reactivated",
+      "receipts": ["raw signal intake", "linked context records", "validation artifacts"],
+      "forbidden": ["evidence admission replacement", "source authority invention", "unreviewed decision promotion"],
+      "promotion_next": "Keep context lineage, replay fingerprints, and downstream action stops verified; formal context authority remains separately gated."
+    }
+  ]
+}
