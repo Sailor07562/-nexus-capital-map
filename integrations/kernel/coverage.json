@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "scope": "Validation profiles for the existing kernel; not a new registry or exhaustive live topology",
+  "profiles": {
+    "dot_intake": {"production_wiring": "UNVERIFIED", "test": "test_missing_classification_fields_hold", "next_proof": "Existing mission/route IDs, authenticated actor and current authority readback"},
+    "email_alert": {"production_wiring": "UNVERIFIED", "test": "test_conflicting_replay_holds", "next_proof": "Existing trigger delivery, deduplication, liveness and failure receipt"},
+    "research_completion": {"production_wiring": "UNVERIFIED", "test": "test_existing_stock_gate_is_used", "next_proof": "Completion boundary calls the existing gate and verifies a separate reviewer"},
+    "ct_receipt_ingestion": {"production_wiring": "UNVERIFIED", "test": "test_ct_receipt_requires_existing_reconciliation", "next_proof": "Read-only ingestion of an existing RECONCILED receipt, with no broker call"},
+    "stack_sync": {"production_wiring": "UNVERIFIED", "test": "test_every_required_mirror_is_checked", "next_proof": "Exact approved per-domain mapping and canonical/required-destination readbacks"},
+    "exception_resolution": {"production_wiring": "UNVERIFIED", "test": "test_unresolved_exceptions_cannot_close", "next_proof": "Existing exception record, owner, revisit trigger and verified resolution"},
+    "reconciliation": {"production_wiring": "UNVERIFIED", "test": "test_stale_or_changed_projection_holds", "next_proof": "Actual version/hash conflict and recovery through the existing workflow"},
+    "decision_memory": {"production_wiring": "UNVERIFIED", "test": "test_outcome_closure_cannot_omit_expectation_and_actual", "next_proof": "Governed existing decision-to-outcome linkage, not automatic thesis promotion"}
+  },
+  "promotion_requirements": {
+    "canonical_bindings": "Exact existing identities, per-domain authority and mappings, with current evidence",
+    "authenticated_context": "Actor, reviewer and policy snapshots obtained by approved readers, not packet authors",
+    "atomic_revision_and_replay": "Actual gateway compare-and-swap, uniqueness and concurrent duplicate tests",
+    "independent_review": "Review by someone other than the implementation author; disagreements remain HOLD",
+    "negative_authority_tests": "Unauthorized callers cannot bypass the actual write/completion boundary",
+    "source_promotion": "Reviewed sanitized source and mandatory repository checks; no bypass",
+    "sandbox_end_to_end": "A full authorized non-financial sandbox run with stored readbacks",
+    "recovery_and_resume": "Interrupted write, partial mirror failure, restart and replay preserve identity",
+    "health_and_alerts": "Existing scheduler/heartbeat liveness, delivery evidence and bounded exception alerting",
+    "rollback_and_live_approval": "Verified rollback path and scoped deployment approval before live wiring"
+  },
+  "production_ready": false
+}

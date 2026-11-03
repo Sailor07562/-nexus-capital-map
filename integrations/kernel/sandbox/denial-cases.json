@@ -1,0 +1,96 @@
+{
+  "scope": "Sandbox-native negative tests. No-op DML must not change records even if grants regress; run each case in its own rolled-back transaction.",
+  "cases": [
+    {
+      "name": "owner_must_assume_reader",
+      "role": null,
+      "readonly": true,
+      "sql": "SELECT nexus_sandbox.kernel_readiness();",
+      "expected": "42501"
+    },
+    {
+      "name": "anon_cannot_invoke",
+      "role": "anon",
+      "readonly": true,
+      "sql": "SELECT nexus_sandbox.kernel_readiness();",
+      "expected": "42501"
+    },
+    {
+      "name": "authenticated_cannot_invoke",
+      "role": "authenticated",
+      "readonly": true,
+      "sql": "SELECT nexus_sandbox.kernel_readiness();",
+      "expected": "42501"
+    },
+    {
+      "name": "service_role_cannot_invoke",
+      "role": "service_role",
+      "readonly": true,
+      "sql": "SELECT nexus_sandbox.kernel_readiness();",
+      "expected": "42501"
+    },
+    {
+      "name": "authenticator_cannot_invoke",
+      "role": "authenticator",
+      "readonly": true,
+      "sql": "SELECT nexus_sandbox.kernel_readiness();",
+      "expected": "42501"
+    },
+    {
+      "name": "reader_requires_readonly_transaction",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": false,
+      "sql": "SELECT nexus_sandbox.kernel_readiness();",
+      "expected": "25006"
+    },
+    {
+      "name": "private_column_denied",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": true,
+      "sql": "SELECT resume_reason FROM nexus_sandbox.federated_control_status;",
+      "expected": "42501"
+    },
+    {
+      "name": "ungranted_table_denied",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": true,
+      "sql": "SELECT evidence_id FROM nexus_sandbox.adapter_001_canonical_health_evidence;",
+      "expected": "42501"
+    },
+    {
+      "name": "existing_mutator_denied",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": false,
+      "sql": "SELECT * FROM nexus_sandbox.populate_federation_from_validated_batch('__reader_denial_probe__');",
+      "expected": "42501"
+    },
+    {
+      "name": "update_denied",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": false,
+      "sql": "UPDATE nexus_sandbox.federated_control_status SET control_id = control_id WHERE false;",
+      "expected": "42501"
+    },
+    {
+      "name": "insert_denied",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": false,
+      "sql": "INSERT INTO nexus_sandbox.federated_control_status(control_id) SELECT '__reader_denial_probe__' WHERE false;",
+      "expected": "42501"
+    },
+    {
+      "name": "delete_denied",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": false,
+      "sql": "DELETE FROM nexus_sandbox.federated_control_status WHERE false;",
+      "expected": "42501"
+    },
+    {
+      "name": "rls_cannot_be_bypassed",
+      "role": "nexus_kernel_sandbox_ro",
+      "readonly": true,
+      "sql": "SET LOCAL row_security = off; SELECT control_id FROM nexus_sandbox.federated_control_status;",
+      "expected": "42501"
+    }
+  ]
+}

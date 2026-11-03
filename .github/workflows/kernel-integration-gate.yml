@@ -1,0 +1,21 @@
+name: Kernel integration gate
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kernel-integration-gate:
+    name: kernel-integration-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Validate all integration and stock-review boundaries
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Preserve existing stock-review repository checks
+        run: python3 scripts/stock_review_gate.py check-repository
