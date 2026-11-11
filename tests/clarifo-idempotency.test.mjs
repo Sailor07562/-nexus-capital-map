@@ -85,6 +85,7 @@ test("uncertain first response is reconciled by same key before receipt; retry n
 
 test("SQL enforces server-side recomputed hash and row-lock reconciliation", async () => {
   const sql = await (await import("node:fs/promises")).readFile(new URL("../postgres/migrations/drafts/clarifo_packet_append_v1_draft.sql", import.meta.url), "utf8");
+  assert.match(sql, /add column if not exists content_hash text/i);
   assert.match(sql, /v_expected_hash := encode\(extensions\.digest/);
   assert.match(sql, /if v_hash is distinct from v_expected_hash/);
   assert.match(sql, /v_packet_json is distinct from p_packet_json/);
