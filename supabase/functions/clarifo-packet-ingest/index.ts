@@ -24,11 +24,25 @@ function json(status: number, body: Record<string, unknown>) {
   });
 }
 
+function stableJson(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+  const record = value as Record<string, unknown>;
+  return `{${
+    Object.keys(record).sort().map((key) =>
+      `${JSON.stringify(key)}:${stableJson(record[key])}`
+    ).join(",")
+  }}`;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function secretMatches(provided: string, expected: string): Promise<boolean> {
+async function secretMatches(
+  provided: string,
+  expected: string,
+): Promise<boolean> {
   const encoder = new TextEncoder();
   const [a, b] = await Promise.all([
     crypto.subtle.digest("SHA-256", encoder.encode(provided)),
@@ -52,19 +66,28 @@ function validatePacket(value: unknown): value is PacketInput {
   ] as const;
 
   for (const key of requiredText) {
-    if (typeof value[key] !== "string" || value[key].trim().length === 0) return false;
-  }
-  if ((value.packet_key as string).length > 240) return false;
-  if (!/^[A-Z0-9.]{1,15}$/.test(value.ticker as string)) return false;
-  if (typeof value.packet_json !== "object" || value.packet_json === null ||
-      Array.isArray(value.packet_json)) return false;
-
-  for (const key of ["market", "cik"] as const) {
-    if (value[key] !== undefined && value[key] !== null && typeof value[key] !== "string") {
+    if (typeof value[key] !== "string" || value[key].trim().length === 0) {
       return false;
     }
   }
-  if (typeof value.market === "string" && value.market.length > 80) return false;
+  if ((value.packet_key as string).length > 240) return false;
+  if (!/^[A-Z0-9.]{1,15}$/.test(value.ticker as string)) return false;
+  if (
+    typeof value.packet_json !== "object" || value.packet_json === null ||
+    Array.isArray(value.packet_json)
+  ) return false;
+
+  for (const key of ["market", "cik"] as const) {
+    if (
+      value[key] !== undefined && value[key] !== null &&
+      typeof value[key] !== "string"
+    ) {
+      return false;
+    }
+  }
+  if (typeof value.market === "string" && value.market.length > 80) {
+    return false;
+  }
   if (typeof value.cik === "string" && value.cik.length > 20) return false;
   return true;
 }
@@ -77,10 +100,12 @@ Deno.serve(async (request: Request) => {
   // verify_jwt must remain enabled at deployment. This additional server-side
   // secret limits this endpoint to the separately provisioned intake caller.
   const sharedSecret = Deno.env.get("CLARIFO_INGEST_SHARED_SECRET");
-  if (!sharedSecret || !await secretMatches(
-    request.headers.get("x-nexus-clarifo-ingest-key") ?? "",
-    sharedSecret,
-  )) {
+  if (
+    !sharedSecret || !await secretMatches(
+      request.headers.get("x-nexus-clarifo-ingest-key") ?? "",
+      sharedSecret,
+    )
+  ) {
     return json(401, { error: "unauthorized" });
   }
 
@@ -168,18 +193,17 @@ Deno.serve(async (request: Request) => {
 
   const append = Array.isArray(appendRows) ? appendRows[0] : null;
   const packetId = append?.clarifo_ingestion_packet_id;
-  if (typeof packetId !== "string" || !["inserted", "duplicate"].includes(append?.outcome)) {
+  if (
+    typeof packetId !== "string" ||
+    !["inserted", "identical", "conflict"].includes(append?.outcome)
+  ) {
     return json(502, { error: "append_receipt_invalid" });
-  }
-
-  if (append.outcome === "duplicate") {
-    return json(409, { error: "packet_key_already_exists", packet_id: packetId });
   }
 
   const { data: readback, error: readbackError } = await db
     .from("clarifo_ingestion_packets")
     .select(
-      "clarifo_ingestion_packet_id,packet_key,ticker,evidence_status,review_status,thesis_promotion_allowed,trade_action_allowed",
+      "clarifo_ingestion_packet_id,packet_key,adapter_version,ticker,company_name,instrument_type,research_lane,market,cik,packet_json,content_hash,evidence_status,review_status,thesis_promotion_allowed,trade_action_allowed",
     )
     .eq("clarifo_ingestion_packet_id", packetId)
     .maybeSingle();
@@ -188,17 +212,36 @@ Deno.serve(async (request: Request) => {
     readbackError || !readback ||
     readback.clarifo_ingestion_packet_id !== packetId ||
     readback.packet_key !== packet.packet_key ||
+    readback.adapter_version !== VERSION ||
     readback.ticker !== packet.ticker ||
+    readback.company_name !== packet.company_name ||
+    readback.instrument_type !== packet.instrument_type ||
+    readback.research_lane !== packet.research_lane ||
+    readback.market !== (packet.market ?? null) ||
+    readback.cik !== (packet.cik ?? null) ||
+    stableJson(readback.packet_json) !== stableJson(packet.packet_json) ||
+    !/^[0-9a-f]{64}$/.test(readback.content_hash) ||
+    append.stored_content_hash !== readback.content_hash ||
     readback.evidence_status !== "evidence_open" ||
     readback.review_status !== "pending_human_review" ||
     readback.thesis_promotion_allowed !== false ||
     readback.trade_action_allowed !== false
   ) {
-    return json(502, { error: "readback_verification_failed", packet_id: packetId });
+    return json(502, {
+      error: "readback_verification_failed",
+      packet_id: packetId,
+    });
   }
 
-  return json(201, {
-    outcome: "inserted",
+  if (append.outcome === "conflict") {
+    return json(409, {
+      error: "packet_key_content_conflict",
+      packet_id: packetId,
+    });
+  }
+
+  return json(append.outcome === "identical" ? 200 : 201, {
+    outcome: append.outcome,
     packet_id: packetId,
     packet_key: packet.packet_key,
     ticker: packet.ticker,
