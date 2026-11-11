@@ -11,8 +11,7 @@ create or replace function nexus.clarifo_packet_append_v1(
   p_packet_json jsonb,
   p_adapter_version text default 'clarifo_nexus_adapter_v2',
   p_market text default null,
-  p_cik text default null,
-  p_retrieved_at timestamptz default clock_timestamp()
+  p_cik text default null
 )
 returns table (outcome text, clarifo_ingestion_packet_id uuid)
 language plpgsql
@@ -43,12 +42,11 @@ begin
   insert into nexus.clarifo_ingestion_packets as packet (
     packet_key, adapter_version, ticker, company_name, instrument_type,
     research_lane, market, cik, packet_json, evidence_status, review_status,
-    thesis_promotion_allowed, trade_action_allowed, retrieved_at, created_by
+    thesis_promotion_allowed, trade_action_allowed, created_by
   ) values (
     p_packet_key, p_adapter_version, p_ticker, p_company_name, p_instrument_type,
     p_research_lane, p_market, p_cik, p_packet_json, 'evidence_open',
-    'pending_human_review', false, false, coalesce(p_retrieved_at, clock_timestamp()),
-    'clarifo_nexus_adapter_v2'
+    'pending_human_review', false, false, 'clarifo_nexus_adapter_v2'
   )
   on conflict (packet_key) do nothing
   returning packet.clarifo_ingestion_packet_id into v_id;
@@ -68,7 +66,7 @@ end;
 $function$;
 
 revoke all on function nexus.clarifo_packet_append_v1(
-  text, text, text, text, text, jsonb, text, text, text, timestamptz
+  text, text, text, text, text, jsonb, text, text, text
 ) from public, anon, authenticated;
 
 grant execute on function nexus.clarifo_packet_append_v1(
