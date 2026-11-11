@@ -186,6 +186,7 @@ Deno.serve(async (request: Request) => {
 
   if (
     readbackError || !readback ||
+    readback.clarifo_ingestion_packet_id !== packetId ||
     readback.packet_key !== packet.packet_key ||
     readback.ticker !== packet.ticker ||
     readback.evidence_status !== "evidence_open" ||
