@@ -40,7 +40,7 @@ begin
     raise exception 'unsupported adapter version' using errcode = '22023';
   end if;
 
-  insert into nexus.clarifo_ingestion_packets (
+  insert into nexus.clarifo_ingestion_packets as packet (
     packet_key, adapter_version, ticker, company_name, instrument_type,
     research_lane, market, cik, packet_json, evidence_status, review_status,
     thesis_promotion_allowed, trade_action_allowed, retrieved_at, created_by
@@ -51,7 +51,7 @@ begin
     'clarifo_nexus_adapter_v2'
   )
   on conflict (packet_key) do nothing
-  returning nexus.clarifo_ingestion_packets.clarifo_ingestion_packet_id into v_id;
+  returning packet.clarifo_ingestion_packet_id into v_id;
 
   if v_id is not null then
     return query select 'inserted'::text, v_id;
