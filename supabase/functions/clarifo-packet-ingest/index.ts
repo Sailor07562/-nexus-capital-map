@@ -95,7 +95,7 @@ Deno.serve(async (request: Request) => {
   }
 
   const contentType = request.headers.get("content-type") ?? "";
-  if (!contentType.toLowerCase().startsWith("application/json")) {
+  if (contentType.split(";")[0].trim().toLowerCase() !== "application/json") {
     return json(415, { error: "content_type_must_be_json" });
   }
 
