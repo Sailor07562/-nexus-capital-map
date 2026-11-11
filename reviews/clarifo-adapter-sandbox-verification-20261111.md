@@ -27,7 +27,7 @@ The Supabase branch status reported `MIGRATIONS_FAILED`. Branch PostgreSQL logs 
 
 ## Production boundary
 
-No SQL was applied to the canonical project. No production Edge Function was deployed, no production registry row or verification event was added, and no Clarifo packet was written or changed. The sandbox branch and its synthetic test row are temporary.
+No SQL was applied to the canonical project. No production Edge Function was deployed, no production registry row or verification event was added, and no Clarifo packet was written or changed. The sandbox branch and synthetic test row were deleted after verification to stop hourly charges. The branch list now contains only main.
 
 ## Next gate
 
