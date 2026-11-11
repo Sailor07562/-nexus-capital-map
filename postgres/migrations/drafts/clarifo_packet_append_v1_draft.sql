@@ -70,5 +70,5 @@ revoke all on function nexus.clarifo_packet_append_v1(
 ) from public, anon, authenticated;
 
 grant execute on function nexus.clarifo_packet_append_v1(
-  text, text, text, text, text, jsonb, text, text, text, timestamptz
+  text, text, text, text, text, jsonb, text, text, text
 ) to service_role;
