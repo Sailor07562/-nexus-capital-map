@@ -22,13 +22,13 @@ Packet history is append-only. A repeated `packet_key` must never update an exis
 
 ## Proposed bounded write path
 
-The SQL draft adds one SECURITY DEFINER function with an empty search path and fully qualified table references. It validates required fields, writes one packet row with the fixed pending/no-action states, handles duplicate keys without updating, and grants EXECUTE only to `service_role`. It does not grant table-level INSERT to API roles.
+The SQL draft adds one SECURITY DEFINER function with an empty search path and fully qualified table references. The Edge Function and `verify_jwt = true` config are draft files only; no function has been deployed and `CLARIFO_INGEST_ENABLED` is not set. It validates required fields, writes one packet row with the fixed pending/no-action states, handles duplicate keys without updating, and grants EXECUTE only to `service_role`. It does not grant table-level INSERT to API roles.
 
 This is a privileged database boundary and remains an unapplied draft. Before any application:
 1. Have the function reviewed against the complete live constraints, triggers, ownership, and migration lineage.
-2. Verify the `nexus` schema is exposed for RPC or define an approved invocation route.
+2. Verify whether the `nexus` schema is exposed for RPC. The SQL connector returned no `pgrst.db_schemas` setting, so exposure is currently unknown; verify in Supabase API settings or with an approved synthetic RPC check.
 3. Establish a separate Edge Function credential boundary and authenticate an approved packet handoff.
 4. Define source-evidence structure and whether a packet-only append is sufficient; this draft does not populate normalized evidence or financial-fact tables.
 5. Add a registry entry and verification receipt explicitly authorizing only this append operation.
 
-The proposed Edge Function accepts one already assembled Clarifo packet. It does not scrape Clarifo, interpret filings, create evidence adjudications, link thesis cards, supersede prior packets, or authorize promotion/trading. Do not put a service-role key in client code, GitHub, workflow files, or Clarifo. Production records and workflows remain untouched by this branch.
+The draft Edge Function accepts one already assembled Clarifo packet. It requires platform JWT verification plus a separately provisioned shared secret, defaults to disabled unless an explicit environment switch is enabled, caps request size, and performs a readback before returning an insert receipt. It does not scrape Clarifo, interpret filings, create evidence adjudications, link thesis cards, supersede prior packets, or authorize promotion/trading. Do not put a service-role key in client code, GitHub, workflow files, or Clarifo. Production records and workflows remain untouched by this branch.
