@@ -1,6 +1,10 @@
 -- DRAFT ONLY. Review and reconcile with canonical migration lineage before applying.
 -- Narrow append primitive for Clarifo packets. This does not promote evidence,
 -- supersede prior packets, or grant table-level INSERT to the API role.
+-- Additive hash column; legacy rows remain NULL and cannot be treated as safe retries.
+alter table nexus.clarifo_ingestion_packets
+  add column if not exists content_hash text;
+
 
 create or replace function nexus.clarifo_packet_append_v1(
   p_packet_key text,
