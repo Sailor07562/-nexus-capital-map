@@ -18,7 +18,7 @@ Use ChatGPT as the human-controlled bridge between Clarifo's research tools and 
 4. **Human approval:** Ask for a clear, packet-specific submit instruction after the preview. Approval applies to that displayed packet only.
 5. **Submit:** A future private Nexus Intake action sends the approved packet server-to-server to the Nexus Edge Function. The service credential and shared secret remain in server-side secret storage; neither appears in Clarifo, a prompt, browser code, or the packet.
 6. **Append and verify:** The function calls only the bounded append RPC. It then reads back the returned packet ID and verifies ticker, key, pending-review state, and disabled promotion/trade flags.
-7. **Receipt:** Return packet ID, ticker, packet key, retrieval time, status, and result. On timeout or uncertain readback, query by packet key before any retry; never blindly resubmit.
+7. **Receipt:** Return packet ID, ticker, packet key, retrieval time, status, and result. On timeout or uncertain readback, query by packet key and compare every envelope field, the packet JSON, and the stored SHA-256 before returning a receipt. A retry with the same key is accepted only when that verification matches; otherwise return a conflict or unresolved status. Never blindly resubmit changed content.
 8. **Human research review:** Nexus reviewers assess evidence separately. Intake does not admit evidence, resolve conflicts, update a thesis, or authorize a trade.
 
 ```mermaid
@@ -43,6 +43,7 @@ The transport envelope uses the existing packet-table fields:
 - `adapter_version`: `clarifo_nexus_adapter_v2`.
 - `ticker`, `company_name`, `instrument_type`, `research_lane`, plus `market` and `cik` when known.
 - `packet_json`: one versioned, cited Clarifo packet.
+- `content_hash`: lowercase SHA-256 over the PostgreSQL JSONB serialization of an object containing the key, adapter version, all envelope metadata (including nullable `market` and `cik`), and the full packet JSON. The SQL function computes and stores it before insert, then recomputes and compares it against the immutable stored metadata and JSON on duplicate. The Edge Function verifies the full readback and that the RPC hash equals the stored hash.
 
 Minimum `packet_json` sections:
 
@@ -65,7 +66,7 @@ Every accepted packet is appended with:
 - `thesis_promotion_allowed = false`
 - `trade_action_allowed = false`
 
-A repeated `packet_key` never updates a row. The adapter does not supersede old packets, write evidence-adjudication records, change research cards, or write portfolio or broker state. The database assigns `retrieved_at`; source dates stay in the packet.
+A repeated `packet_key` never updates a row. An identical retry returns the original ID only after metadata, JSON, and hash verification. Reuse of the key with any different content or metadata is a conflict. The unique constraint serializes concurrent attempts; after a collision, the function locks and verifies the winning row. The adapter does not supersede old packets, write evidence-adjudication records, change research cards, or write portfolio or broker state. The database assigns `retrieved_at`; source dates stay in the packet.
 
 ## Proposed tool boundary
 
@@ -83,7 +84,7 @@ Before production:
 2. Implement the private preview/submit connector and its server-side authentication; keep Supabase service credentials out of the client.
 3. Verify Nexus schema RPC exposure or use a separately approved invocation route.
 4. Security-review the SECURITY DEFINER RPC, grants, owner, search path, constraints, logging, and duplicate-race behavior.
-5. Invoke in a faithful development environment using synthetic packets; test preview-only behavior, confirmation binding, duplicate handling, rejected inputs, and readback.
+5. Invoke in a faithful development environment using synthetic packets; test preview-only behavior, confirmation binding, identical retry, conflicting payload, concurrent duplicate, uncertain response reconciliation, rejected inputs, and full metadata/content-hash readback.
 6. Add a registry row as `verification_required` with no allowed operations until checks pass. Record security and end-to-end verification events with evidence references.
 7. Only after human governance approval, enable exactly one operation: append a Clarifo packet pending human review.
 
