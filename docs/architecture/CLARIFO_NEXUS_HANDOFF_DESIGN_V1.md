@@ -43,7 +43,7 @@ The transport envelope uses the existing packet-table fields:
 - `adapter_version`: `clarifo_nexus_adapter_v2`.
 - `ticker`, `company_name`, `instrument_type`, `research_lane`, plus `market` and `cik` when known.
 - `packet_json`: one versioned, cited Clarifo packet.
-- `content_hash`: lowercase SHA-256 over the PostgreSQL JSONB serialization of an object containing the key, adapter version, all envelope metadata (including nullable `market` and `cik`), and the full packet JSON. The proposed SQL adds a nullable hash column for compatibility with historical rows; rows without a hash fail closed on retry reconciliation. The SQL function computes and stores it before insert, then recomputes and compares it against the immutable stored metadata and JSON on duplicate. The Edge Function verifies the full readback and that the RPC hash equals the stored hash.
+- `content_hash`: lowercase SHA-256 stored in its own table column, outside `packet_json`, over the PostgreSQL JSONB serialization of an object containing the key, adapter version, all envelope metadata (including nullable `market` and `cik`), and the full packet JSON. It is not embedded inside packet_json, avoiding a circular hash. The proposed SQL adds a nullable hash column for compatibility with historical rows; rows without a hash fail closed on retry reconciliation. The SQL function computes and stores it before insert, then recomputes and compares it against the immutable stored metadata and JSON on duplicate. The Edge Function verifies the full readback and that the RPC hash equals the stored hash.
 
 Minimum `packet_json` sections:
 
@@ -54,7 +54,7 @@ Minimum `packet_json` sections:
 - `recommendations[]`: Clarifo's output, clearly labeled as research output with no execution authority.
 - `source_refs[]`: Clarifo page/source IDs, title, URL, document type, publication or filing date, and the facts each source supports.
 - `limitations[]`: missing periods, incomplete coverage, unresolved entity mapping, stale inputs, and other caveats.
-- `packet_meta`: schema version, Clarifo tool names, retrieval time assigned by Nexus, requested scope, and content hash.
+- `packet_meta`: schema version, Clarifo tool names, retrieval time assigned by Nexus, and requested scope. The envelope content hash is stored separately in the packet table.
 
 Do not invent page IDs or citations. Reject or hold claims whose source references cannot be resolved. Financial facts remain in the packet JSON in v1; normalized writes to `clarifo_evidence_items` and `clarifo_financial_facts` are a later, separately reviewed phase.
 
