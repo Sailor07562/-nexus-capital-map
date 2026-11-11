@@ -22,7 +22,7 @@ Packet history is append-only. A repeated `packet_key` must never update an exis
 
 ## Proposed bounded write path
 
-The SQL draft adds one SECURITY DEFINER function with an empty search path and fully qualified table references. The Edge Function and `verify_jwt = true` config are draft files only; no function has been deployed and `CLARIFO_INGEST_ENABLED` is not set. It validates required fields, writes one packet row with the fixed pending/no-action states, handles duplicate keys without updating, and grants EXECUTE only to `service_role`. It does not grant table-level INSERT to API roles.
+The SQL draft adds one SECURITY DEFINER function with an empty search path and fully qualified table references. The Edge Function and `verify_jwt = true` config are draft files only; no function has been deployed and `CLARIFO_INGEST_ENABLED` is not set. It validates required fields, writes one packet row with the fixed pending/no-action states, recomputes a SHA-256 over all envelope metadata and packet JSON, accepts only verified identical retries, and rejects conflicting duplicate keys without updating. It grants EXECUTE only to `service_role`. It does not grant table-level INSERT to API roles.
 
 This is a privileged database boundary and remains an unapplied draft. Before any application:
 1. Have the function reviewed against the complete live constraints, triggers, ownership, and migration lineage.
