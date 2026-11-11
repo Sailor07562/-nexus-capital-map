@@ -18,7 +18,7 @@ Required packet state:
 - `thesis_promotion_allowed = false`
 - `trade_action_allowed = false`
 
-Packet history is append-only. A repeated `packet_key` must never update an existing row. The latest-packet view uses retrieval time and excludes explicitly superseded rows; this adapter does not supersede older packets.
+Packet history is append-only. A repeated `packet_key` must never update an existing row. The latest-packet view uses retrieval time and excludes explicitly superseded rows; this adapter does not supersede older packets. The database assigns the retrieval timestamp so a caller cannot backdate or future-date a packet. Source-period dates belong inside the cited packet evidence.
 
 ## Proposed bounded write path
 
