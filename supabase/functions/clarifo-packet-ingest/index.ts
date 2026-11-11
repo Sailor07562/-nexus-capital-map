@@ -97,19 +97,41 @@ Deno.serve(async (request: Request) => {
     return json(503, { error: "server_configuration_incomplete" });
   }
 
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.toLowerCase().startsWith("application/json")) {
+    return json(415, { error: "content_type_must_be_json" });
+  }
+
   const contentLength = Number(request.headers.get("content-length") ?? "0");
-  if (contentLength > MAX_BODY_BYTES) {
+  if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) {
     return json(413, { error: "payload_too_large" });
   }
 
   let raw: string;
   try {
-    raw = await request.text();
+    const reader = request.body?.getReader();
+    if (!reader) return json(400, { error: "invalid_body" });
+    const chunks: Uint8Array[] = [];
+    let total = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_BODY_BYTES) {
+        await reader.cancel();
+        return json(413, { error: "payload_too_large" });
+      }
+      chunks.push(value);
+    }
+    const joined = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      joined.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    raw = new TextDecoder("utf-8", { fatal: true }).decode(joined);
   } catch {
     return json(400, { error: "invalid_body" });
-  }
-  if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) {
-    return json(413, { error: "payload_too_large" });
   }
 
   let candidate: unknown;
