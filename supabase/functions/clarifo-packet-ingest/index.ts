@@ -12,7 +12,6 @@ type PacketInput = {
   packet_json: Record<string, unknown>;
   market?: string | null;
   cik?: string | null;
-  retrieved_at?: string | null;
 };
 
 function json(status: number, body: Record<string, unknown>) {
@@ -60,15 +59,13 @@ function validatePacket(value: unknown): value is PacketInput {
   if (typeof value.packet_json !== "object" || value.packet_json === null ||
       Array.isArray(value.packet_json)) return false;
 
-  for (const key of ["market", "cik", "retrieved_at"] as const) {
+  for (const key of ["market", "cik"] as const) {
     if (value[key] !== undefined && value[key] !== null && typeof value[key] !== "string") {
       return false;
     }
   }
   if (typeof value.market === "string" && value.market.length > 80) return false;
   if (typeof value.cik === "string" && value.cik.length > 20) return false;
-  if (typeof value.retrieved_at === "string" &&
-      Number.isNaN(Date.parse(value.retrieved_at))) return false;
   return true;
 }
 
@@ -161,7 +158,6 @@ Deno.serve(async (request: Request) => {
       p_adapter_version: VERSION,
       p_market: packet.market ?? null,
       p_cik: packet.cik ?? null,
-      p_retrieved_at: packet.retrieved_at ?? null,
     },
   );
 
