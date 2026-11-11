@@ -43,7 +43,7 @@ The transport envelope uses the existing packet-table fields:
 - `adapter_version`: `clarifo_nexus_adapter_v2`.
 - `ticker`, `company_name`, `instrument_type`, `research_lane`, plus `market` and `cik` when known.
 - `packet_json`: one versioned, cited Clarifo packet.
-- `content_hash`: lowercase SHA-256 over the PostgreSQL JSONB serialization of an object containing the key, adapter version, all envelope metadata (including nullable `market` and `cik`), and the full packet JSON. The SQL function computes and stores it before insert, then recomputes and compares it against the immutable stored metadata and JSON on duplicate. The Edge Function verifies the full readback and that the RPC hash equals the stored hash.
+- `content_hash`: lowercase SHA-256 over the PostgreSQL JSONB serialization of an object containing the key, adapter version, all envelope metadata (including nullable `market` and `cik`), and the full packet JSON. The proposed SQL adds a nullable hash column for compatibility with historical rows; rows without a hash fail closed on retry reconciliation. The SQL function computes and stores it before insert, then recomputes and compares it against the immutable stored metadata and JSON on duplicate. The Edge Function verifies the full readback and that the RPC hash equals the stored hash.
 
 Minimum `packet_json` sections:
 
